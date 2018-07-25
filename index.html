@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Gamedev Canvas Workshop</title>
+    <style>
+      * {
+        padding: 100;
+        margin: 0;
+      }
+      canvas {
+        background: #eee;
+        display: block;
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+  <body>
+    <script type="text/javascript" src="canvas.js"></script>
+    <canvas id="myCanvas" width="750" height="420"></canvas>
+
+    <script>
+      var canvas = document.getElementById("myCanvas");
+      var ctx = canvas.getContext("2d");
+      var ballRadius = 10;
+      var x = canvas.width / 2;
+      var y = canvas.height - 300;
+      var dx = 2;
+      var dy = -2;
+      var paddleHeight = 10;
+      var paddleWidth = 75;
+      var paddleX = (canvas.width - paddleWidth) / 2;
+      var rightPressed = false;
+      var leftPressed = false;
+      var score = 0;
+      var lives = 3;
+      var gravity = 0.5;
+      var friction = 0.995;
+      const ballWeight = 1;
+      const boxWeight = 2;
+      let boxX = 400;
+      let boxY = 200;
+      let by;
+      let bx;
+      let hit = false;
+      let mouseHold = false;
+      let pos;
+      let mpos;
+
+      // var bricks = []; for (var c = 0; c < brickColumnCount; c++) {   bricks[c] = [];   for (var r = 0; r < brickRowCount; r++) {     bricks[c][r] = {       x: 0,       y: 0,       status: 1     };   } }
+
+      document.addEventListener("keydown", keyDownHandler, false);
+      document.addEventListener("keyup", keyUpHandler, false);
+      // document.addEventListener("mousemove", mouseMoveHandler, false);
+
+      function mousePos(canvas, event) {
+        a = canvas.getBoundingClientRect()
+        pos = {
+          x: event.clientX - a.left,
+          y: event.clientY - a.top
+        }
+        console.log(pos);
+        return pos;
+      }
+
+      canvas.addEventListener('mousedown', (e) => {
+        mouseHold = true;
+      });
+
+      canvas.addEventListener('mouseup', (e) => {
+        mouseHold = false;
+        pos = null;
+      });
+
+      canvas.addEventListener('mousemove', (e) => {
+        mpos = mousePos(canvas, e);
+      });
+
+      function keyDownHandler(e) {
+        if (e.keyCode == 39) {
+          rightPressed = true;
+        } else if (e.keyCode == 37) {
+          leftPressed = true;
+        }
+      }
+      function keyUpHandler(e) {
+        if (e.keyCode == 39) {
+          rightPressed = false;
+        } else if (e.keyCode == 37) {
+          leftPressed = false;
+        }
+      }
+
+      function drawBall() {
+        ctx.beginPath();
+        ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
+        ctx.fillStyle = "#0095DD";
+        ctx.fill();
+        ctx.closePath();
+
+        if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
+          console.log('hit side')
+          dx = -dx;
+        }
+      }
+      function drawPaddle() {
+        ctx.beginPath();
+        ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+        ctx.fillStyle = "#0095DD";
+        ctx.fill();
+        ctx.closePath();
+      }
+      //
+      // function drawScore() {   ctx.font = "16px Arial";   ctx.fillStyle = "#0095DD";   ctx.fillText("Score: " + score, 8, 20); }
+      function drawLives() {
+        ctx.font = "16px Arial";
+        ctx.fillStyle = "#0095DD";
+        ctx.fillText("Lives: " + lives, canvas.width - 65, 20);
+      }
+
+      function drawBox() {
+        const size = 50;
+        if (x > boxX && x < boxX + size && y > boxY && y < boxY + size) {
+          hit = true;
+          bx = dx;
+          by = dy;
+          dx = -dx;
+          dy = -dy;
+        }
+
+        if (boxX + bx > canvas.width - size || boxX + bx < size) {
+          console.log('hit side')
+          bx = -bx;
+        } else if (by + boxY > canvas.height - size || by + boxY < size) {
+          by = -by
+        }
+
+        if (hit) {
+          if (boxY + by + (boxWeight * gravity) + size + size < canvas.height + size) {
+            by += (boxWeight * gravity);
+          }
+          bx *= friction;
+          boxX += bx;
+          boxY += by;
+        }
+
+        ctx.beginPath();
+        ctx.rect(boxX, boxY, size, size)
+        ctx.fillStyle = "#0095DD";
+        ctx.fill();
+        ctx.closePath();
+      }
+
+      function drawSling() {
+        ctx.beginPath();
+        ctx.rect(70, 275, 10, 10)
+        ctx.fillStyle = "#0095DD";
+        ctx.fill();
+        ctx.closePath();
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawBall();
+        drawSling();
+        drawPaddle();
+        drawLives();
+        drawBox();
+
+        if (y + dy < ballRadius) {
+          console.log('hit top')
+          dy = -dy;
+        } else if (y + dy > canvas.height - ballRadius - paddleHeight) {
+          if (x > paddleX && x < paddleX + paddleWidth) {
+            console.log('on the paddle')
+            dy = -dy;
+          } else {
+            console.log('dead')
+            lives--;
+            if (!lives) {
+              alert("GAME OVER");
+              document.location.reload();
+            } else {
+              x = canvas.width / 2;
+              y = canvas.height - 30;
+              dx = 3;
+              dy = -3;
+              paddleX = (canvas.width - paddleWidth) / 2;
+            }
+          }
+        }
+
+        if (rightPressed && paddleX < canvas.width - paddleWidth) {
+          paddleX += 7;
+        } else if (leftPressed && paddleX > 0) {
+          paddleX -= 7;
+        }
+
+        if (y + dy + gravity + ballRadius + paddleHeight + 10 < canvas.height + paddleHeight) {
+          dy += gravity
+        }
+
+        if (mouseHold) {
+          x = mpos.x
+          y = mpos.y
+        } else {
+          dx *= friction;
+          x += dx;
+          y += dy;
+        }
+
+        requestAnimationFrame(draw);
+      }
+
+      draw();
+    </script>
+
+  </body>
+</html>
