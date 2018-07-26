@@ -1,0 +1,24 @@
+{
+  "name": "AngryNerds",
+  "version": "1.0.0",
+  "description": "An AngryBirds inspired game with nerdy undertones",
+  "main": "canvas.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "webpack": "webpack --watch --mode=development"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nossonhuebner/AngryNerds.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Nossonhuebner/AngryNerds/issues"
+  },
+  "homepage": "https://github.com/Nossonhuebner/AngryNerds#readme",
+  "devDependencies": {
+    "webpack-cli": "^3.1.0"
+  }
+}
