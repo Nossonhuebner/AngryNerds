@@ -128,6 +128,27 @@
         ctx.lineTo(120, 276);
         ctx.lineWidth = 1;
         ctx.stroke();
+
+        if (!action) {
+          ctx.strokeStyle = 'black';
+          ctx.beginPath();
+          ctx.moveTo(100, 276);
+          ctx.lineTo(x, y);
+          ctx.lineWidth = 1;
+          ctx.stroke();
+
+          ctx.strokeStyle = 'black';
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+          ctx.lineTo(150, 300);
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      }
+
+      function drawMound() {
+        // ctx.beginPath(); ctx.fillStyle = "#2f1a08" ctx.moveTo(360, canvas.height - 38); ctx.lineTo(425, canvas.height - 38 - 50); ctx.lineTo(450, canvas.height - 38 - 50); ctx.lineTo(475, canvas.height - 38 - 80); ctx.lineTo(495, canvas.height - 38 - 80);
+        // ctx.lineTo(590, canvas.height - 38); ctx.fill();
       }
 
       function draw() {
