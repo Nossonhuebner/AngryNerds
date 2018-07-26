@@ -5,8 +5,8 @@
     <title>Gamedev Canvas Workshop</title>
     <style>
       * {
-        padding: 100;
-        margin: 0;
+        /* padding: 50px; */
+        margin: 50px;
       }
       canvas {
         background: #eee;
@@ -17,19 +17,21 @@
   </head>
   <body>
     <script type="text/javascript" src="canvas.js"></script>
-    <canvas id="myCanvas" width="750" height="420"></canvas>
+    <canvas id="myCanvas" width="850" height="420" style="background: url('./angry_background.png'); background-repeat: no-repeat;
+    background-size: 100%;
+    background-position-y: -217px;"></canvas>
 
     <script>
       var canvas = document.getElementById("myCanvas");
       var ctx = canvas.getContext("2d");
       var ballRadius = 10;
-      var x = canvas.width / 2;
-      var y = canvas.height - 300;
+      const slingY = 263;
+      const slingX = 98;
+      var x = slingX;
+      var y = slingY;
       var dx = 2;
       var dy = -2;
       var paddleHeight = 10;
-      var paddleWidth = 75;
-      var paddleX = (canvas.width - paddleWidth) / 2;
       var rightPressed = false;
       var leftPressed = false;
       var score = 0;
@@ -47,13 +49,7 @@
       let pos;
       let mpos;
       let released = false;
-      const slingY = 275;
-
-      // var bricks = []; for (var c = 0; c < brickColumnCount; c++) {   bricks[c] = [];   for (var r = 0; r < brickRowCount; r++) {     bricks[c][r] = {       x: 0,       y: 0,       status: 1     };   } }
-
-      document.addEventListener("keydown", keyDownHandler, false);
-      document.addEventListener("keyup", keyUpHandler, false);
-      // document.addEventListener("mousemove", mouseMoveHandler, false);
+      let action = false;
 
       function mousePos(canvas, event) {
         a = canvas.getBoundingClientRect()
@@ -67,6 +63,7 @@
 
       canvas.addEventListener('mousedown', (e) => {
         mouseHold = true;
+        action = true;
       });
 
       canvas.addEventListener('mouseup', (e) => {
@@ -79,25 +76,10 @@
         mpos = mousePos(canvas, e);
       });
 
-      function keyDownHandler(e) {
-        if (e.keyCode == 39) {
-          rightPressed = true;
-        } else if (e.keyCode == 37) {
-          leftPressed = true;
-        }
-      }
-      function keyUpHandler(e) {
-        if (e.keyCode == 39) {
-          rightPressed = false;
-        } else if (e.keyCode == 37) {
-          leftPressed = false;
-        }
-      }
-
       function drawBall() {
         ctx.beginPath();
         ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
-        ctx.fillStyle = "#0095DD";
+        ctx.fillStyle = "#f10d0d";
         ctx.fill();
         ctx.closePath();
 
@@ -106,21 +88,6 @@
           dx = -dx;
         }
       }
-      function drawPaddle() {
-        ctx.beginPath();
-        ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
-        ctx.fillStyle = "#0095DD";
-        ctx.fill();
-        ctx.closePath();
-      }
-      //
-      // function drawScore() {   ctx.font = "16px Arial";   ctx.fillStyle = "#0095DD";   ctx.fillText("Score: " + score, 8, 20); }
-      function drawLives() {
-        ctx.font = "16px Arial";
-        ctx.fillStyle = "#0095DD";
-        ctx.fillText("Lives: " + lives, canvas.width - 65, 20);
-      }
-
       function drawBox() {
         const size = 50;
         if (x > boxX && x < boxX + size && y > boxY && y < boxY + size) {
@@ -134,12 +101,12 @@
         if (boxX + bx > canvas.width - size || boxX + bx < size) {
           console.log('hit side')
           bx = -bx;
-        } else if (by + boxY > canvas.height - size || by + boxY < size) {
+        } else if (by + boxY > canvas.height - size - 38 || by + boxY < size) {
           by = -by
         }
 
         if (hit) {
-          if (boxY + by + (boxWeight * gravity) + size + size < canvas.height + size) {
+          if (boxY + by + (boxWeight * gravity) + size + size < canvas.height + size - 38) {
             by += (boxWeight * gravity);
           }
           bx *= friction;
@@ -149,65 +116,46 @@
 
         ctx.beginPath();
         ctx.rect(boxX, boxY, size, size)
-        ctx.fillStyle = "#0095DD";
+        ctx.fillStyle = "#f10d0d";
         ctx.fill();
         ctx.closePath();
       }
 
       function drawSling() {
+        ctx.strokeStyle = 'black';
         ctx.beginPath();
-        ctx.rect(70, slingY, 10, 10)
-        ctx.fillStyle = "#0095DD";
-        ctx.fill();
-        ctx.closePath();
+        ctx.moveTo(76, 250);
+        ctx.lineTo(120, 276);
+        ctx.lineWidth = 1;
+        ctx.stroke();
       }
 
       function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawBall();
         drawSling();
-        drawPaddle();
-        drawLives();
         drawBox();
-
-        if (y + dy < ballRadius) {
-          console.log('hit top')
+        if (y + dy < ballRadius || y + dy > canvas.height - ballRadius - 38) {
+          console.log('hit y')
           dy = -dy;
-        } else if (y + dy > canvas.height - ballRadius - paddleHeight) {
-          if (x > paddleX && x < paddleX + paddleWidth) {
-            console.log('on the paddle')
-            dy = -dy;
-          } else {
-            console.log('dead')
-            lives--;
-            if (!lives) {
-              alert("GAME OVER");
-              document.location.reload();
-            } else {
-              x = canvas.width / 2;
-              y = canvas.height - 30;
-              dx = 3;
-              dy = -3;
-              paddleX = (canvas.width - paddleWidth) / 2;
-            }
-          }
         }
-
-        if (rightPressed && paddleX < canvas.width - paddleWidth) {
-          paddleX += 7;
-        } else if (leftPressed && paddleX > 0) {
-          paddleX -= 7;
-        }
-
-        if (y + dy + gravity + ballRadius + paddleHeight + 10 < canvas.height + paddleHeight) {
+        if (y + dy + gravity + ballRadius < canvas.height - 38 && !(mouseHold)) {
           dy += gravity
         }
-
         if (mouseHold) {
           x = mpos.x
           y = mpos.y
-          // } else if (released) {   released = false;   const pull = slingY - mpos.y;   console.log(pull)   if (pull / 40 > 1 && pull / 40 < 2) {     y = mpos.y * (pull / 40)   } else {     y = mpos.y;   }   x = mpos.x
-        } else {
+        } else if (released) {
+          released = false;
+          const pullY = slingY - mpos.y;
+          const pullX = slingX - mpos.x;
+          console.log(pullY);
+          console.log(pullX);
+          dy = pullY / 5;
+          dx = pullX / 5;
+          dy += gravity;
+        }
+        if (action) {
           dx *= friction;
           x += dx;
           y += dy;
