@@ -46,6 +46,8 @@
       let mouseHold = false;
       let pos;
       let mpos;
+      let released = false;
+      const slingY = 275;
 
       // var bricks = []; for (var c = 0; c < brickColumnCount; c++) {   bricks[c] = [];   for (var r = 0; r < brickRowCount; r++) {     bricks[c][r] = {       x: 0,       y: 0,       status: 1     };   } }
 
@@ -69,6 +71,7 @@
 
       canvas.addEventListener('mouseup', (e) => {
         mouseHold = false;
+        released = true;
         pos = null;
       });
 
@@ -153,7 +156,7 @@
 
       function drawSling() {
         ctx.beginPath();
-        ctx.rect(70, 275, 10, 10)
+        ctx.rect(70, slingY, 10, 10)
         ctx.fillStyle = "#0095DD";
         ctx.fill();
         ctx.closePath();
@@ -203,6 +206,7 @@
         if (mouseHold) {
           x = mpos.x
           y = mpos.y
+          // } else if (released) {   released = false;   const pull = slingY - mpos.y;   console.log(pull)   if (pull / 40 > 1 && pull / 40 < 2) {     y = mpos.y * (pull / 40)   } else {     y = mpos.y;   }   x = mpos.x
         } else {
           dx *= friction;
           x += dx;
