@@ -11,17 +11,24 @@ class Shape {
   draw(){
 
     if (this.width) {
-      this.ctx.beginPath();
-      this.ctx.rect(this.x, this.y, this.height, this.width);
-      this.ctx.fillStyle = "#f10d0d";
-      this.ctx.fill();
-      this.ctx.closePath();
+      let img = new Image();
+      img.src = './assets/images/webpack-logo.png';
+      this.ctx.drawImage(img, this.x, this.y, 150, 75);
+      // this.ctx.beginPath();
+      // this.ctx.rect(this.x, this.y, this.height, this.width);
+      // this.ctx.fillStyle = "#f10d0d";
+      // this.ctx.fill();
+      // this.ctx.closePath();
     } else {
-      this.ctx.beginPath();
-      this.ctx.arc(this.x, this.y, this.height, 0, Math.PI * 2);
-      this.ctx.fillStyle = "#f10d0d";
-      this.ctx.fill();
-      this.ctx.closePath();
+      let img = new Image();
+      img.src = "./assets/images/nerd.png";
+      this.ctx.drawImage(img, this.x - 12, this.y - 12, this.height, this.height);
+
+      // this.ctx.beginPath();
+      // this.ctx.arc(this.x, this.y, this.height, 0, Math.PI * 2);
+      // this.ctx.fillStyle = "#f10d0d";
+      // this.ctx.fill();
+      // this.ctx.closePath();
     }
     // requestAnimationFrame(this.draw.bind(this));
   }
