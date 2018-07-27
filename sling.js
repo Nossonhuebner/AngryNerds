@@ -1,13 +1,6 @@
 class Sling {
-  constructor(ctx, action, x, y) {
-    ctx.strokeStyle = 'black';
-    ctx.beginPath();
-    ctx.moveTo(100, 276);
-    ctx.lineTo(150, 300);
-    ctx.lineWidth = 1;
-    ctx.stroke();
+  constructor(ctx, mouseHold, x, y) {
 
-    if (!action) {
       ctx.strokeStyle = 'black';
       ctx.beginPath();
       ctx.moveTo(100, 276);
@@ -21,7 +14,6 @@ class Sling {
       ctx.lineTo(150, 300);
       ctx.lineWidth = 1;
       ctx.stroke();
-    }
   }
 
 }

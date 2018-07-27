@@ -1,22 +1,37 @@
 class Shape {
-  constructor(x, y, bound) {
+  constructor(ctx, x, y, height, width) {
+    this.ctx = ctx ;
     this.x = x;
     this.y = y;
-    this.bound = bound;
+    this.height = height;
+    this.width = width;
 
-    if (this.x + this.bound > 800 || this.x  < this.bound) {
-      debugger
-      this.x = -this.x;
-    }
-
-    if (this.y + this.bound > 400 || this.y  < this.bound) {
-      this.y = -this.y;
-    }
   }
 
   draw(){
-    
+    // if (this.x + this.height > 800) {
+    //   this.x = -this.x;
+    // }
+    //
+    // if (this.y + this.height > 360 ) {
+    //   this.y = -this.y;
+    // }
+
+    if (this.width) {
+      this.ctx.beginPath();
+      this.ctx.rect(this.x, this.y, this.height, this.width);
+      this.ctx.fillStyle = "#f10d0d";
+      this.ctx.fill();
+      this.ctx.closePath();
+    } else {
+      this.ctx.beginPath();
+      this.ctx.arc(this.x, this.y, this.height, 0, Math.PI * 2);
+      this.ctx.fillStyle = "#f10d0d";
+      this.ctx.fill();
+      this.ctx.closePath();
+    }
+    // requestAnimationFrame(this.draw.bind(this));
   }
 }
 
-export default Thing;
+export default Shape;

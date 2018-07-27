@@ -1,27 +1,18 @@
 import Shape from './shape';
 import Ball from './ball';
 import Box from './box';
-import Sling from './sling'
+import Sling from './sling';
 
 document.addEventListener('DOMContentLoaded', () => {
   var canvas = document.getElementById("myCanvas");
   var ctx = canvas.getContext("2d");
-  var ballRadius = 10;
-  const slingY = 288;
-  const slingX = 125;
-  var x = slingX;
-  var y = slingY;
+  const ballRadius = 10;
+  var x = 125;
+  var y = 288;
   var dx = 2;
   var dy = -2;
-  var paddleHeight = 10;
-  var rightPressed = false;
-  var leftPressed = false;
-  var score = 0;
-  var lives = 3;
   var gravity = 0.5;
   var friction = 0.99;
-  const ballWeight = 1;
-  const boxWeight = 2;
   let boxX = 400;
   let boxY = 200;
   let by;
@@ -34,33 +25,35 @@ document.addEventListener('DOMContentLoaded', () => {
   let action = false;
   let angle = 4;
 
+
+
   function mousePos(canvas, event) {
     const a = canvas.getBoundingClientRect();
     pos = {
       x: event.clientX - a.left,
       y: event.clientY - a.top
     };
-    console.log(pos);
     return pos;
   }
 
-  canvas.addEventListener('mousedown', (e) => {
-    action = false;
-    mouseHold = true;
-  });
+    canvas.addEventListener('mousedown', (e) => {
+      action = false
+      released = false
+      mouseHold = true;
+    });
+    canvas.addEventListener('mouseup', (e) => {
+      action = true;
+      mouseHold = false;
+      released = true;
+      debugger
+      pos = null;
+    });
+    canvas.addEventListener('mousemove', (e) => {
+      mpos = mousePos(canvas, e);
+    });
 
-  canvas.addEventListener('mouseup', (e) => {
-    action = true;
-    mouseHold = false;
-    released = true;
-    pos = null;
-  });
-
-  canvas.addEventListener('mousemove', (e) => {
-    mpos = mousePos(canvas, e);
-  });
-
-    const ball = new Ball(x, y, ballRadius, ctx);
+    const ball = new Ball(ctx, x, y, ballRadius);
+    const box = new Box(ctx, boxX, boxY, 50, 50);
     // ctx.beginPath();
     // ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
     // ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
@@ -97,8 +90,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (hit) {
-      if (boxY + by + (boxWeight * gravity) + size + size < canvas.height + size - 38) {
-        by += (boxWeight * gravity);
+      if (boxY + by + (2 * gravity) + size + size < canvas.height + size - 38) {
+        by += (2 * gravity);
       }
       bx *= friction;
       boxX += bx;
@@ -111,18 +104,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ctx.save(); ctx.translate(boxX, boxX);  Translate to centre of square ctx.rotate(Math.PI / 4);  Rotate 45 degrees
 
-    ctx.beginPath();
-    ctx.rect(boxX, boxY, size, size);
-    ctx.fillStyle = "#f10d0d";
-    ctx.fill();
-    ctx.closePath(); // Centre at the rotation point
+ // Centre at the rotation point
 
     // ctx.restore();
 
   }
 
-  function drawSling() {
-    const sling = new Sling(ctx, action, x, y);
+  function drawString() {
+    const sling = new Sling(ctx, mouseHold, x, y);
   }
 
   function drawMound() {
@@ -132,9 +121,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawBall();
-    drawSling();
-    drawBox();
+
+    ctx.strokeStyle = 'black';
+    ctx.beginPath();
+    ctx.moveTo(100, 276);
+    ctx.lineTo(150, 300);
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    box.draw();
+    // drawBox();
     drawMound();
     // if (y + dy < ballRadius || y + dy > canvas.height - ballRadius - 38) {
     //   // console.log('hit y')
@@ -144,23 +140,29 @@ document.addEventListener('DOMContentLoaded', () => {
     //   dy += gravity;
     // }
     if (mouseHold) {
-      x = mpos.x;
-      y = mpos.y;
+      drawString();
+      // x = mpos.x;
+      // y = mpos.y;
+      ball.x = mpos.x;
+      ball.y = mpos.y;
     } else if (released) {
       released = false;
-      const pullY = slingY - mpos.y;
-      const pullX = slingX - mpos.x;
+      const pullY = y - mpos.y;
+      const pullX = x - mpos.x;
+      console.log(y);
+      console.log(mpos.y);
       console.log(pullY);
-      console.log(pullX);
       dy = pullY / 5;
       dx = pullX / 5;
-      dy += gravity;
     }
     if (action) {
+      debugger
+      dy += gravity;
       dx *= friction;
-      x += dx;
-      y += dy;
+      ball.x += dx;
+      ball.y += dy;
     }
+    ball.draw();
 
     requestAnimationFrame(draw);
   }
