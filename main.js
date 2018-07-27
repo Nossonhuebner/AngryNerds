@@ -45,7 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
       action = true;
       mouseHold = false;
       released = true;
-      debugger
       pos = null;
     });
     canvas.addEventListener('mousemove', (e) => {
@@ -68,12 +67,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // }
   function drawBox() {
     const size = 50;
-    if (x + ballRadius > boxX && x - ballRadius < boxX + size && y + ballRadius > boxY && y - ballRadius < boxY + size) {
+    if (ball.x + ballRadius > box.x && ball.x - ballRadius < box.x + size && ball.y + ballRadius > box.y && ball.y - ballRadius < box.y + size) {
       hit = true;
       bx = dx;
       by = dy;
 
-      if (x + ballRadius > boxX && x - ballRadius < boxX + size) {
+      if (ball.x + ballRadius > box.x && ball.x - ballRadius < box.x + size) {
         dx = -dx;
       } else {
         dy = -dy;
@@ -82,30 +81,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!hit) {}
 
-    if (boxX + bx > canvas.width - size || boxX + bx < 0) {
+    if (box.x + bx > canvas.width - size || box.x + bx < 0) {
       console.log('hit side');
       bx = -bx;
-    } else if (by + boxY > canvas.height - size - 38 || by + boxY < size) {
+    } else if (by + box.y > canvas.height - size - 38 || by + box.y < size) {
       by = -by * 0.8;
     }
 
     if (hit) {
-      if (boxY + by + (2 * gravity) + size + size < canvas.height + size - 38) {
+      if (box.y + by + (2 * gravity) + size + size < canvas.height + size - 38) {
         by += (2 * gravity);
       }
       bx *= friction;
-      boxX += bx;
-      boxY += by;
+      box.x += bx;
+      box.y += by;
       // ctx.save(); ctx.translate(-boxX, -boxY);  Translate to centre of square ctx.rotate(Math.PI / angle);  Rotate 45 degrees angle++ ctx.beginPath(); ctx.rect(boxX, boxY, size, size) ctx.fillStyle = "#f10d0d"; ctx.fill(); ctx.closePath();  Centre at
       // the rotation point
       //
       // ctx.restore();
     }
-
     // ctx.save(); ctx.translate(boxX, boxX);  Translate to centre of square ctx.rotate(Math.PI / 4);  Rotate 45 degrees
-
- // Centre at the rotation point
-
     // ctx.restore();
 
   }
@@ -130,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.stroke();
 
     box.draw();
-    // drawBox();
+    drawBox();
     drawMound();
     // if (y + dy < ballRadius || y + dy > canvas.height - ballRadius - 38) {
     //   // console.log('hit y')
@@ -156,11 +151,19 @@ document.addEventListener('DOMContentLoaded', () => {
       dx = pullX / 5;
     }
     if (action) {
-      debugger
-      dy += gravity;
+
       dx *= friction;
-      ball.x += dx;
+      if (dy + ball.y > canvas.height - ball.height - 38 || dy + ball.y < ball.height ) {
+        dy = -dy * 0.9 ;
+      } else {
+        dy += gravity;
+      }
+
+      if (dx + ball.x > canvas.width - ball.height || dx + ball.x < ball.height) {
+        dx = -dx;
+      }
       ball.y += dy;
+      ball.x += dx;
     }
     ball.draw();
 

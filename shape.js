@@ -9,13 +9,6 @@ class Shape {
   }
 
   draw(){
-    // if (this.x + this.height > 800) {
-    //   this.x = -this.x;
-    // }
-    //
-    // if (this.y + this.height > 360 ) {
-    //   this.y = -this.y;
-    // }
 
     if (this.width) {
       this.ctx.beginPath();
