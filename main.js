@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
         pix[i+1] -= 10;
         pix[i+3] -= 2;
       }
-      ctx.putImageData(imgd, 0, 0);
+      ctx.putImageData(imgData, 0, 0);
 
       bx = dx;
       by = dy;
