@@ -84,9 +84,9 @@ document.addEventListener('DOMContentLoaded', () => {
       stop(launch);
 
       for (let i = 0, n = pix.length; i <n; i += 4) {
-        pix[i] += 10;
-        pix[i+1] -= 10;
-        pix[i+3] -= 2;
+        pix[i] = 100;
+        pix[i+1] = 0;
+        pix[i+3] += 20;
       }
       ctx.putImageData(imgData, 0, 0);
 
