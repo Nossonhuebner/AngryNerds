@@ -313,7 +313,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const height = 75;
     const length = 75;
-    const imgData = ctx.getImageData(600, 300, height, height);
+    const imgData = ctx.getImageData(300, 600, height, height);
     const pix = imgData.data;
 
     if (ball.x + ballRadius > box.x && ball.x - ballRadius < box.x + length && ball.y + ballRadius > box.y && ball.y - ballRadius < box.y + height) {
