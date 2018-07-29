@@ -328,7 +328,9 @@ document.addEventListener('DOMContentLoaded', () => {
           pix[i+3] += 20;
         }
       }
-      box.img = pix;
+      let tempImg = new Image();
+      tempImg.src = canvas.toDataUrl();
+      box.img = tempImg;
 
       bx = dx;
       by = dy;
