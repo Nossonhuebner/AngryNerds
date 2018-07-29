@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
           pix[i+3] += 20;
         }
       }
-      box.img = pix;
+      box.img = ctx.putImageData(pix, 0,0);
 
       bx = dx;
       by = dy;
@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
   //       }
   // }
   let ballImg = new Image();
-  ballImg.src = './assets/images/webpack-logo.png';
+  ballImg.src = './assets/images/nerd.png';
   let ball = new Ball(ctx, ballImg, x, y, ballRadius);
 
   let boxImg = new Image();
