@@ -84,14 +84,14 @@ document.addEventListener('DOMContentLoaded', () => {
       stop(launch);
 
       for (let i = 0, n = pix.length; i <n; i += 4) {
-        if (pix[i+2] > 10) {
           pix[i] += 75;
-          pix[i+2] -= 50;
-        }
+          pix[i+2] -= 10;
       }
-      ctx.putImageData(imgData, box.x, box.y, box.x, box.y, length, height);
+      ctx.putImageData(imgData, box.x, box.y);
       let tempImg = new Image();
       tempImg.src = canvas.toDataURL("image/png");
+      tempImg.height = height;
+      tempImg.length = length;
       box.img = tempImg;
 
       bx = dx;
