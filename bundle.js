@@ -86,21 +86,21 @@
 /************************************************************************/
 /******/ ({
 
-/***/ "./ball.js":
-/*!*****************!*\
-  !*** ./ball.js ***!
-  \*****************/
+/***/ "./elements/ball.js":
+/*!**************************!*\
+  !*** ./elements/ball.js ***!
+  \**************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _shape__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./shape */ "./shape.js");
+/* harmony import */ var _shape__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./shape */ "./elements/shape.js");
 
 
 class Ball extends _shape__WEBPACK_IMPORTED_MODULE_0__["default"] {
-  constructor(ctx, x, y, ballRadius) {
-    super(ctx, x, y, ballRadius);
+  constructor(ctx, img, x, y, ballRadius) {
+    super(ctx, img, x, y, ballRadius);
   }
 
 }
@@ -110,26 +110,115 @@ class Ball extends _shape__WEBPACK_IMPORTED_MODULE_0__["default"] {
 
 /***/ }),
 
-/***/ "./box.js":
-/*!****************!*\
-  !*** ./box.js ***!
-  \****************/
+/***/ "./elements/box.js":
+/*!*************************!*\
+  !*** ./elements/box.js ***!
+  \*************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _shape__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./shape */ "./shape.js");
+/* harmony import */ var _shape__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./shape */ "./elements/shape.js");
 
 
 class Box extends _shape__WEBPACK_IMPORTED_MODULE_0__["default"] {
-  constructor(ctx, x, y, height, width) {
-    super(ctx, x, y, height, width);
+  constructor(ctx, img, x, y, height, width) {
+    super(ctx, img, x, y, height, width);
   }
 }
 
 
 /* harmony default export */ __webpack_exports__["default"] = (Box);
+
+
+/***/ }),
+
+/***/ "./elements/shape.js":
+/*!***************************!*\
+  !*** ./elements/shape.js ***!
+  \***************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+class Shape {
+  constructor(ctx, img, x, y, height, width) {
+    this.ctx = ctx ;
+    this.x = x;
+    this.y = y;
+    this.img = img;
+    this.height = height;
+    this.width = width;
+
+  }
+
+  draw(){
+
+    if (this.width) {
+      this.ctx.drawImage(this.img, this.x, this.y, 75, 75);
+      // this.ctx.beginPath();
+      // this.ctx.rect(this.x, this.y, this.height, this.width);
+      // this.ctx.fillStyle = "#f10d0d";
+      // this.ctx.fill();
+      // this.ctx.closePath();
+    } else {
+      this.ctx.drawImage(this.img, this.x - 12, this.y - 12, this.height, this.height);
+
+      // this.ctx.beginPath();
+      // this.ctx.arc(this.x, this.y, this.height, 0, Math.PI * 2);
+      // this.ctx.fillStyle = "#f10d0d";
+      // this.ctx.fill();
+      // this.ctx.closePath();
+    }
+    // requestAnimationFrame(this.draw.bind(this));
+  }
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (Shape);
+
+
+/***/ }),
+
+/***/ "./elements/sling.js":
+/*!***************************!*\
+  !*** ./elements/sling.js ***!
+  \***************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+class Sling {
+  constructor(ctx, mouseHold, x, y) {
+      if (mouseHold) {
+      ctx.strokeStyle = 'black';
+      ctx.beginPath();
+      ctx.moveTo(100, 276);
+      ctx.lineTo(x, y);
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      ctx.strokeStyle = 'black';
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(150, 300);
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    } else {
+      ctx.strokeStyle = 'black';
+      ctx.beginPath();
+      ctx.moveTo(100, 276);
+      ctx.lineTo(150, 300);
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+  }
+
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (Sling);
 
 
 /***/ }),
@@ -143,10 +232,10 @@ class Box extends _shape__WEBPACK_IMPORTED_MODULE_0__["default"] {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _shape__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./shape */ "./shape.js");
-/* harmony import */ var _ball__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ball */ "./ball.js");
-/* harmony import */ var _box__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./box */ "./box.js");
-/* harmony import */ var _sling__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./sling */ "./sling.js");
+/* harmony import */ var _elements_shape__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./elements/shape */ "./elements/shape.js");
+/* harmony import */ var _elements_ball__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./elements/ball */ "./elements/ball.js");
+/* harmony import */ var _elements_box__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./elements/box */ "./elements/box.js");
+/* harmony import */ var _elements_sling__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./elements/sling */ "./elements/sling.js");
 
 
 
@@ -203,7 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
       released = false;
       mouseHold = true;
       validHeight = false;
-      ball = new _ball__WEBPACK_IMPORTED_MODULE_1__["default"](ctx, x, y, ballRadius);
+      ball = new _elements_ball__WEBPACK_IMPORTED_MODULE_1__["default"](ctx, x, y, ballRadius);
       stop(launch);
 
     });
@@ -224,20 +313,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const height = 75;
     const length = 75;
-    const imgData = ctx.getImageData(box.x, box.y, height, length);
-    const pix = imgData.data;
+    // const imgData = ctx.getImageData(box.x, box.y, height, length);
+    // const pix = imgData.data;
 
     if (ball.x + ballRadius > box.x && ball.x - ballRadius < box.x + length && ball.y + ballRadius > box.y && ball.y - ballRadius < box.y + height) {
       hit = true;
       explosion.play();
       stop(launch);
-
-      for (let i = 0, n = pix.length; i <n; i += 4) {
-        pix[i] = 100;
-        pix[i+1] = 0;
-        pix[i+3] += 20;
-      }
-      ctx.putImageData(imgData, 0, 0);
+      //
+      // for (let i = 0, n = pix.length; i <n; i += 4) {
+      //   pix[i] = 100;
+      //   pix[i+1] = 0;
+      //   pix[i+3] += 20;
+      // }
+      // ctx.putImageData(imgData, 0, 0);
 
       bx = dx;
       by = dy;
@@ -261,7 +350,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function drawString() {
-    const sling = new _sling__WEBPACK_IMPORTED_MODULE_3__["default"](ctx, mouseHold, ball.x, ball.y);
+    const sling = new _elements_sling__WEBPACK_IMPORTED_MODULE_3__["default"](ctx, mouseHold, ball.x, ball.y);
   }
 
   function drawFence() {
@@ -299,8 +388,13 @@ document.addEventListener('DOMContentLoaded', () => {
   //         dy = -dy;
   //       }
   // }
-  let ball = new _ball__WEBPACK_IMPORTED_MODULE_1__["default"](ctx, x, y, ballRadius);
-  const box = new _box__WEBPACK_IMPORTED_MODULE_2__["default"](ctx, boxX, boxY, 50, 50);
+  let ballImg = new Image();
+  ballImg.src = './assets/images/webpack-logo.png';
+  let ball = new _elements_ball__WEBPACK_IMPORTED_MODULE_1__["default"](ctx, ballImg, x, y, ballRadius);
+
+  let boxImg = new Image();
+  boxImg.src = './assets/images/webpack-logo.png';
+  const box = new _elements_box__WEBPACK_IMPORTED_MODULE_2__["default"](ctx, boxImg, boxX, boxY, 50, 50);
 
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -359,98 +453,6 @@ document.addEventListener('DOMContentLoaded', () => {
   draw();
 
 });
-
-
-/***/ }),
-
-/***/ "./shape.js":
-/*!******************!*\
-  !*** ./shape.js ***!
-  \******************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-class Shape {
-  constructor(ctx, x, y, height, width) {
-    this.ctx = ctx ;
-    this.x = x;
-    this.y = y;
-    this.height = height;
-    this.width = width;
-
-  }
-
-  draw(){
-
-    if (this.width) {
-      let img = new Image();
-      img.src = './assets/images/webpack-logo.png';
-      this.ctx.drawImage(img, this.x, this.y, 75, 75);
-      // this.ctx.beginPath();
-      // this.ctx.rect(this.x, this.y, this.height, this.width);
-      // this.ctx.fillStyle = "#f10d0d";
-      // this.ctx.fill();
-      // this.ctx.closePath();
-    } else {
-      let img = new Image();
-      img.src = "./assets/images/nerd.png";
-      this.ctx.drawImage(img, this.x - 12, this.y - 12, this.height, this.height);
-
-      // this.ctx.beginPath();
-      // this.ctx.arc(this.x, this.y, this.height, 0, Math.PI * 2);
-      // this.ctx.fillStyle = "#f10d0d";
-      // this.ctx.fill();
-      // this.ctx.closePath();
-    }
-    // requestAnimationFrame(this.draw.bind(this));
-  }
-}
-
-/* harmony default export */ __webpack_exports__["default"] = (Shape);
-
-
-/***/ }),
-
-/***/ "./sling.js":
-/*!******************!*\
-  !*** ./sling.js ***!
-  \******************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-class Sling {
-  constructor(ctx, mouseHold, x, y) {
-      if (mouseHold) {
-      ctx.strokeStyle = 'black';
-      ctx.beginPath();
-      ctx.moveTo(100, 276);
-      ctx.lineTo(x, y);
-      ctx.lineWidth = 1;
-      ctx.stroke();
-
-      ctx.strokeStyle = 'black';
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.lineTo(150, 300);
-      ctx.lineWidth = 1;
-      ctx.stroke();
-    } else {
-      ctx.strokeStyle = 'black';
-      ctx.beginPath();
-      ctx.moveTo(100, 276);
-      ctx.lineTo(150, 300);
-      ctx.lineWidth = 1;
-      ctx.stroke();
-    }
-  }
-
-}
-
-/* harmony default export */ __webpack_exports__["default"] = (Sling);
 
 
 /***/ })

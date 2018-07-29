@@ -1,7 +1,7 @@
-import Shape from './shape';
-import Ball from './ball';
-import Box from './box';
-import Sling from './sling';
+import Shape from './elements/shape';
+import Ball from './elements/ball';
+import Box from './elements/box';
+import Sling from './elements/sling';
 
 document.addEventListener('DOMContentLoaded', () => {
   var canvas = document.getElementById("myCanvas");
@@ -75,20 +75,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const height = 75;
     const length = 75;
-    const imgData = ctx.getImageData(box.x, box.y, height, length);
-    const pix = imgData.data;
+    // const imgData = ctx.getImageData(box.x, box.y, height, length);
+    // const pix = imgData.data;
 
     if (ball.x + ballRadius > box.x && ball.x - ballRadius < box.x + length && ball.y + ballRadius > box.y && ball.y - ballRadius < box.y + height) {
       hit = true;
       explosion.play();
       stop(launch);
-
-      for (let i = 0, n = pix.length; i <n; i += 4) {
-        pix[i] = 100;
-        pix[i+1] = 0;
-        pix[i+3] += 20;
-      }
-      ctx.putImageData(imgData, 0, 0);
+      //
+      // for (let i = 0, n = pix.length; i <n; i += 4) {
+      //   pix[i] = 100;
+      //   pix[i+1] = 0;
+      //   pix[i+3] += 20;
+      // }
+      // ctx.putImageData(imgData, 0, 0);
 
       bx = dx;
       by = dy;
@@ -150,8 +150,13 @@ document.addEventListener('DOMContentLoaded', () => {
   //         dy = -dy;
   //       }
   // }
-  let ball = new Ball(ctx, x, y, ballRadius);
-  const box = new Box(ctx, boxX, boxY, 50, 50);
+  let ballImg = new Image();
+  ballImg.src = './assets/images/webpack-logo.png';
+  let ball = new Ball(ctx, ballImg, x, y, ballRadius);
+
+  let boxImg = new Image();
+  boxImg.src = './assets/images/webpack-logo.png';
+  const box = new Box(ctx, boxImg, boxX, boxY, 50, 50);
 
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);

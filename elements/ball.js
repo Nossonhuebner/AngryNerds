@@ -1,8 +1,8 @@
 import Shape from './shape';
 
 class Ball extends Shape {
-  constructor(ctx, x, y, ballRadius) {
-    super(ctx, x, y, ballRadius);
+  constructor(ctx, img, x, y, ballRadius) {
+    super(ctx, img, x, y, ballRadius);
   }
 
 }
