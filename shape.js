@@ -13,7 +13,7 @@ class Shape {
     if (this.width) {
       let img = new Image();
       img.src = './assets/images/webpack-logo.png';
-      this.ctx.drawImage(img, this.x, this.y, 150, 75);
+      this.ctx.drawImage(img, this.x, this.y, 75, 75);
       // this.ctx.beginPath();
       // this.ctx.rect(this.x, this.y, this.height, this.width);
       // this.ctx.fillStyle = "#f10d0d";

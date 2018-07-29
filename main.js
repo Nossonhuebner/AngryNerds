@@ -25,10 +25,13 @@ document.addEventListener('DOMContentLoaded', () => {
   let action = false;
   let angle = 4;
   let validHeight = false;
+
   const boing = new Audio();
   boing.src = "./assets/audio/boing.wav";
   const launch = new Audio();
   launch.src = "./assets/audio/bomb_drop.wav";
+  const explosion = new Audio();
+  explosion.src = "./assets/audio/explosion.wav";
 
 
 
@@ -52,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
       mouseHold = true;
       validHeight = false;
       ball = new Ball(ctx, x, y, ballRadius);
-      stop(launch)
+      stop(launch);
 
     });
     canvas.addEventListener('mouseup', (e) => {
@@ -69,10 +72,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   function drawBox() {
+
     const height = 75;
-    const length = 150;
+    const length = 75;
+    const imgData = ctx.getImageData(box.x, box.y, height, length);
+    const pix = imgData.data;
+
     if (ball.x + ballRadius > box.x && ball.x - ballRadius < box.x + length && ball.y + ballRadius > box.y && ball.y - ballRadius < box.y + height) {
       hit = true;
+      explosion.play();
+      stop(launch);
+
+      for (let i = 0, n = pix.length; i <n; i += 4) {
+        pix[i] += 10;
+        pix[i+1] -= 10;
+        pix[i+3] -= 2;
+      }
+      ctx.putImageData(imgd, 0, 0);
+
       bx = dx;
       by = dy;
       dx = -dx;
@@ -174,6 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
       dx *= friction;
       if ((dy + ball.y > canvas.height - ball.height- 28  && validHeight )|| dy + ball.y < ball.height ) { //hit top / bottom
         dy = -dy * 0.9 ;
+        stop(launch);
       } else {
         dy += gravity;
       }
