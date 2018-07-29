@@ -327,7 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
           pix[i+2] -= 50;
         }
       }
-      ctx.putImageData(imgData, box.x, box.y, length, height);
+      ctx.putImageData(imgData, box.x, box.y, box.x, box.y, length, height);
       let tempImg = new Image();
       tempImg.src = canvas.toDataURL("image/png");
       box.img = tempImg;
