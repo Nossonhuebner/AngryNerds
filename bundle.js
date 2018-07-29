@@ -313,7 +313,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const height = 75;
     const length = 75;
-    const imgData = ctx.getImageData(box.x, box.y, height, length);
+    const imgData = ctx.getImageData(box.x, box.y, 300, 300);
     const pix = imgData.data;
 
     if (ball.x + ballRadius > box.x && ball.x - ballRadius < box.x + length && ball.y + ballRadius > box.y && ball.y - ballRadius < box.y + height) {
@@ -329,8 +329,8 @@ document.addEventListener('DOMContentLoaded', () => {
       let tempImg = new Image();
 
       tempImg.src = canvas.toDataURL("image/png");
-      tempImg.height = height;
-      tempImg.length = length;
+      tempImg.height = 300;
+      tempImg.length = 300;
       box.img = tempImg;
 
       bx = dx;
