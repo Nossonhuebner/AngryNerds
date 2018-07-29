@@ -330,7 +330,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       ctx.putImageData(imgData, box.x, box.y);
       let tempImg = new Image();
-      tempImg.src = can[0].toDataURL("image/png");
+      tempImg.src = canvas[0].toDataURL("image/png");
       box.img = tempImg;
 
       bx = dx;
