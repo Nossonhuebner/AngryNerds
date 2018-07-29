@@ -89,7 +89,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       ctx.putImageData(imgData, box.x, box.y);
       let tempImg = new Image();
-      tempImg.src = canvas.toDataURL("image/png");
+
+      tempImg.src = canvas.toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, ''));;
       tempImg.height = height;
       tempImg.length = length;
       box.img = tempImg;
