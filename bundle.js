@@ -328,7 +328,7 @@ document.addEventListener('DOMContentLoaded', () => {
           pix[i+3] += 20;
         }
       }
-      box.img.src = URL.createObjectURL(pix);
+      box.img = pix;
 
       bx = dx;
       by = dy;
