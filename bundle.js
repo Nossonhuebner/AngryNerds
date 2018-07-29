@@ -146,9 +146,9 @@ __webpack_require__.r(__webpack_exports__);
 class Shape {
   constructor(ctx, img, x, y, height, width) {
     this.ctx = ctx ;
+    this.img = img;
     this.x = x;
     this.y = y;
-    this.img = img;
     this.height = height;
     this.width = width;
 
@@ -292,7 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
       released = false;
       mouseHold = true;
       validHeight = false;
-      ball = new _elements_ball__WEBPACK_IMPORTED_MODULE_1__["default"](ctx, x, y, ballRadius);
+      // ball = new Ball(ctx, x, y, ballRadius);
       stop(launch);
 
     });

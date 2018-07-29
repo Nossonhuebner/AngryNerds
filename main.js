@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
       released = false;
       mouseHold = true;
       validHeight = false;
-      ball = new Ball(ctx, x, y, ballRadius);
+      // ball = new Ball(ctx, x, y, ballRadius);
       stop(launch);
 
     });

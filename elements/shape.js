@@ -1,9 +1,9 @@
 class Shape {
   constructor(ctx, img, x, y, height, width) {
     this.ctx = ctx ;
+    this.img = img;
     this.x = x;
     this.y = y;
-    this.img = img;
     this.height = height;
     this.width = width;
 
