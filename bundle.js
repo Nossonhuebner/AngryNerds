@@ -325,7 +325,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (pix[i+2] > 10) {
           pix[i] += 75;
           pix[i+2] -= 50;
-          pix[i+3] += 20;
         }
       }
       ctx.putImageData(imgData, box.x, box.y, length, height);
