@@ -155,14 +155,14 @@ class Shape {
   }
 
   draw(){
-
     if (this.width) { //box
-      if (this.hits) {
-        if (this.hits > 2) {
-          return null;
+      if (this.hits > 2) {
+          this.width = 0;
+          this.height = 0;
+          this.x = 0;
+          this.y = 0;
         }
-        this.img.src = this.srcArr[this.hits];
-      }
+      this.img.src = this.srcArr[this.hits];
       this.ctx.drawImage(this.img, this.x, this.y, 75, 75);
       // this.ctx.beginPath();
       // this.ctx.rect(this.x, this.y, this.height, this.width);
@@ -313,6 +313,12 @@ document.addEventListener('DOMContentLoaded', () => {
       mpos = mousePos(canvas, e);
     });
 
+    const getDistance = (x1,y1, x2, y2) => {
+     let xDistance = x2 - x1;
+     let yDistance = y2 - y1;
+
+     return Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
+    };
 
 
   function drawBox() {
@@ -365,6 +371,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const sling = new _elements_sling__WEBPACK_IMPORTED_MODULE_3__["default"](ctx, mouseHold, ball.x, ball.y);
   }
 
+
   function drawFence() {
     ctx.strokeStyle = '#2f1a08';
     ctx.beginPath();
@@ -406,13 +413,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let boxImg = new Image();
   const srcArr = ['./assets/images/webpack/webpack-logo.png', './assets/images/webpack/webpack-logo-orange.png','./assets/images/webpack/webpack-logo-red.png'];
-  boxImg.src = srcArr[0];
   const box = new _elements_box__WEBPACK_IMPORTED_MODULE_2__["default"](ctx, boxImg, boxX, boxY, 50, 50, srcArr);
   box.hits = 0;
 
+  const sun = new Image('./assets/images/coffee-sun.tiff');
+
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+    ctx.drawImage(sun, 700, 100, 80, 80);
     box.draw();
     drawFence();
     drawBox();
@@ -429,8 +437,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (action && ball.y < canvas.height - ball.height - 28){
       validHeight = true;
     }
-    console.log(validHeight);
-
     if (mouseHold && mpos.y < canvas.height - ball.height) {
       ball.x = mpos.x;
       ball.y = mpos.y;
@@ -438,9 +444,7 @@ document.addEventListener('DOMContentLoaded', () => {
       released = false;
       const pullY = y - mpos.y;
       const pullX = x - mpos.x;
-      console.log(y);
-      console.log(mpos.y);
-      console.log(pullY);
+
       dy = pullY / 5;
       dx = pullX / 5;
     }

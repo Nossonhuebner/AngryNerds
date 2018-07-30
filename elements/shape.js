@@ -10,14 +10,14 @@ class Shape {
   }
 
   draw(){
-
     if (this.width) { //box
-      if (this.hits) {
-        if (this.hits > 2) {
-          return null;
+      if (this.hits > 2) {
+          this.width = 0;
+          this.height = 0;
+          this.x = 0;
+          this.y = 0;
         }
-        this.img.src = this.srcArr[this.hits];
-      }
+      this.img.src = this.srcArr[this.hits];
       this.ctx.drawImage(this.img, this.x, this.y, 75, 75);
       // this.ctx.beginPath();
       // this.ctx.rect(this.x, this.y, this.height, this.width);
