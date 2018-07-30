@@ -99,8 +99,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class Ball extends _shape__WEBPACK_IMPORTED_MODULE_0__["default"] {
-  constructor(ctx, img, x, y, ballRadius) {
-    super(ctx, img, x, y, ballRadius);
+  constructor(img, x, y, ballRadius) {
+    super(img, x, y, ballRadius);
   }
 
 }
@@ -123,8 +123,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class Box extends _shape__WEBPACK_IMPORTED_MODULE_0__["default"] {
-  constructor(ctx, img, x, y, height, width, srcArr) {
-    super(ctx, img, x, y, height, width, srcArr);
+  constructor(img, x, y, height, width, srcArr) {
+    super(img, x, y, height, width, srcArr);
   }
 }
 
@@ -144,33 +144,33 @@ class Box extends _shape__WEBPACK_IMPORTED_MODULE_0__["default"] {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 class Shape {
-  constructor(ctx, img, x, y, height, width, srcArr) {
-    this.ctx = ctx ;
+  constructor(img, x, y, height, width, srcArr) {
     this.img = img;
     this.x = x;
     this.y = y;
     this.height = height;
     this.width = width;
     this.srcArr = srcArr;
+    this.hits = 0;
   }
 
-  draw(){
+  draw(ctx){
     if (this.width) { //box
       if (this.hits > 2) {
-          this.width = 0;
+          this.width = 1;
           this.height = 0;
           this.x = 0;
           this.y = 0;
         }
       this.img.src = this.srcArr[this.hits];
-      this.ctx.drawImage(this.img, this.x, this.y, 75, 75);
+      ctx.drawImage(this.img, this.x, this.y, 75, 75);
       // this.ctx.beginPath();
       // this.ctx.rect(this.x, this.y, this.height, this.width);
       // this.ctx.fillStyle = "#f10d0d";
       // this.ctx.fill();
       // this.ctx.closePath();
     } else {
-      this.ctx.drawImage(this.img, this.x - 12, this.y - 12, this.height, this.height);
+      ctx.drawImage(this.img, this.x - 12, this.y - 12, this.height, this.height);
 
       // this.ctx.beginPath();
       // this.ctx.arc(this.x, this.y, this.height, 0, Math.PI * 2);
@@ -229,6 +229,33 @@ class Sling {
 
 /***/ }),
 
+/***/ "./levels/level1.js":
+/*!**************************!*\
+  !*** ./levels/level1.js ***!
+  \**************************/
+/*! exports provided: level1 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "level1", function() { return level1; });
+/* harmony import */ var _elements_box__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../elements/box */ "./elements/box.js");
+// let boxImg = new Image();
+// const srcArr = ['./assets/images/webpack/webpack-logo.png', './assets/images/webpack/webpack-logo-orange.png','./assets/images/webpack/webpack-logo-red.png'];
+// boxImg.src = srcArr[0];
+// const box = new Box(ctx, boxImg, boxX, boxY, 50, 50, srcArr);
+// box.hits = 0;
+
+  let boxX = 600;
+  let boxY = 300;
+
+  let boxImg = new Image();
+  const srcArr = ['./assets/images/webpack/webpack-logo.png', './assets/images/webpack/webpack-logo-orange.png','./assets/images/webpack/webpack-logo-red.png'];
+  const level1 = [new _elements_box__WEBPACK_IMPORTED_MODULE_0__["default"](boxImg, boxX, boxY, 50, 50, srcArr)];
+
+
+/***/ }),
+
 /***/ "./main.js":
 /*!*****************!*\
   !*** ./main.js ***!
@@ -242,6 +269,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _elements_ball__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./elements/ball */ "./elements/ball.js");
 /* harmony import */ var _elements_box__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./elements/box */ "./elements/box.js");
 /* harmony import */ var _elements_sling__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./elements/sling */ "./elements/sling.js");
+/* harmony import */ var _levels_level1__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./levels/level1 */ "./levels/level1.js");
+
 
 
 
@@ -249,7 +278,7 @@ __webpack_require__.r(__webpack_exports__);
 
 document.addEventListener('DOMContentLoaded', () => {
   var canvas = document.getElementById("myCanvas");
-  var ctx = canvas.getContext("2d");
+  const ctx = canvas.getContext("2d");
   const ballRadius = 25;
   var x = 125;
   var y = 288;
@@ -269,6 +298,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let action = false;
   let angle = 4;
   let validHeight = false;
+  const levels = [_levels_level1__WEBPACK_IMPORTED_MODULE_4__["level1"]];
+  const boxes = levels[0];
 
   const boing = new Audio();
   boing.src = "./assets/audio/boing.wav";
@@ -321,7 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
 
-  function drawBox() {
+  function drawBox(box) {
 
     const height = 75;
     const length = 75;
@@ -352,7 +383,6 @@ document.addEventListener('DOMContentLoaded', () => {
       dy = -dy;
     }
     if (box.x + bx > canvas.width - length || box.x + bx < 0) {
-      console.log('hit side');
       bx = -bx;
     } else if (by + box.y > canvas.height - height - 28 || by + box.y < height) {
       by = -by * 0.8;
@@ -379,13 +409,16 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.lineTo(400, 380);
     ctx.lineWidth = 10;
     ctx.stroke();
-
+    debugger
     if (ball.x + ballRadius > 400 && ball.x - ballRadius < 410 && ball.y + ballRadius > 250) {
       dx = -dx;
     }
 
-    if (box.x + box.width > 400 && box.x < 410 && box.y + box.height > 250) {
-      bx = -bx;
+    for (var i = 0; i < boxes.length; i++) {
+      if (boxes[i].x + boxes[i].width > 400 && boxes[i].x < 410 && boxes[i].y + boxes[i].height > 250) {
+        bx = -bx;
+        boxes[i].x += bx;
+      }
     }
   }
 
@@ -409,21 +442,21 @@ document.addEventListener('DOMContentLoaded', () => {
   // }
   let ballImg = new Image();
   ballImg.src = './assets/images/nerd.png';
-  let ball = new _elements_ball__WEBPACK_IMPORTED_MODULE_1__["default"](ctx, ballImg, x, y, ballRadius);
+  let ball = new _elements_ball__WEBPACK_IMPORTED_MODULE_1__["default"](ballImg, x, y, ballRadius);
 
-  let boxImg = new Image();
-  const srcArr = ['./assets/images/webpack/webpack-logo.png', './assets/images/webpack/webpack-logo-orange.png','./assets/images/webpack/webpack-logo-red.png'];
-  const box = new _elements_box__WEBPACK_IMPORTED_MODULE_2__["default"](ctx, boxImg, boxX, boxY, 50, 50, srcArr);
-  box.hits = 0;
 
-  const sun = new Image('./assets/images/coffee-sun.tiff');
+  const sun = new Image();
+  sun.src = './assets/images/coffee-sun.png';
 
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(sun, 700, 100, 80, 80);
-    box.draw();
+    ctx.drawImage(sun, 800, 30, 110, 110);
+
+    for (var i = 0; i < boxes.length; i++) {
+      drawBox(boxes[i]);
+      boxes[i].draw(ctx);
+    }
     drawFence();
-    drawBox();
     // drawMound();
     // if (y + dy < ballRadius || y + dy > canvas.height - ballRadius - 38) {
     //   // console.log('hit y')
@@ -463,7 +496,7 @@ document.addEventListener('DOMContentLoaded', () => {
       ball.y += dy;
       ball.x += dx;
     }
-    ball.draw();
+    ball.draw(ctx);
 
     requestAnimationFrame(draw);
   }
