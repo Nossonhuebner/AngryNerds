@@ -3,6 +3,7 @@ import Ball from './elements/ball';
 import Box from './elements/box';
 import Sling from './elements/sling';
 import { level1 } from './levels/level1';
+import { level2 } from './levels/level2';
 
 document.addEventListener('DOMContentLoaded', () => {
   var canvas = document.getElementById("myCanvas");
@@ -26,8 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let action = false;
   let angle = 4;
   let validHeight = false;
-  const levels = [level1];
-  const boxes = levels[0];
+  const levels = [level1, level2];
+  let boxes = levels[0];
 
   const boing = new Audio();
   boing.src = "./assets/audio/boing.wav";
@@ -79,6 +80,24 @@ document.addEventListener('DOMContentLoaded', () => {
      return Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
     };
 
+    function isLevelOver(){
+      debugger
+      for (var i = 0; i < boxes.length; i++) {
+        if (boxes[i].height !== 0) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function handleLevels() {
+      debugger
+      if (isLevelOver() && levels.length > 1) {
+        levels.shift();
+        boxes = levels[0];
+      }
+    }
+
 
   function drawBox(box) {
 
@@ -90,6 +109,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (ball.x + ballRadius > box.x && ball.x - ballRadius < box.x + length && ball.y + ballRadius > box.y && ball.y - ballRadius < box.y + height) {
       hit = true;
       box.hits += 1;
+      console.log(box.hits);
+
       explosion.play();
       stop(launch);
 
@@ -105,23 +126,23 @@ document.addEventListener('DOMContentLoaded', () => {
       // // tempImg.length = 300;
       // box.img = tempImg;
 
-      bx = dx;
-      by = dy;
-      dx = -dx;
-      dy = -dy;
+      box.bx = dx;
+      box.by = dy;
+      dx = -(dx+3);
+      dy = -(dy+3);
     }
-    if (box.x + bx > canvas.width - length || box.x + bx < 0) {
-      bx = -bx;
-    } else if (by + box.y > canvas.height - height - 28 || by + box.y < height) {
-      by = -by * 0.8;
+    if (box.x + box.bx > canvas.width - length || box.x + box.bx < 0) {
+      box.bx = -box.bx;
+    } else if (box.by + box.y > canvas.height - height - 28 || box.by + box.y < height) {
+      box.by = -box.by * 0.8;
     }
     if (hit) {
-      if (box.y + by + (2 * gravity) + height < canvas.height - 38) {
-        by += (2 * gravity);
+      if (box.y + box.by + (2 * gravity) + height < canvas.height - 38) {
+        box.by += (2 * gravity);
       }
-      bx *= friction;
-      box.x += bx;
-      box.y += by;
+      box.bx *= friction;
+      box.x += box.bx;
+      box.y += box.by;
     }
   }
 
@@ -137,15 +158,14 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.lineTo(400, 380);
     ctx.lineWidth = 10;
     ctx.stroke();
-    debugger
     if (ball.x + ballRadius > 400 && ball.x - ballRadius < 410 && ball.y + ballRadius > 250) {
       dx = -dx;
     }
 
     for (var i = 0; i < boxes.length; i++) {
       if (boxes[i].x + boxes[i].width > 400 && boxes[i].x < 410 && boxes[i].y + boxes[i].height > 250) {
-        bx = -bx;
-        boxes[i].x += bx;
+        boxes[i].bx = -boxes[i].bx;
+        boxes[i].x += boxes[i].bx;
       }
     }
   }
@@ -177,9 +197,10 @@ document.addEventListener('DOMContentLoaded', () => {
   sun.src = './assets/images/coffee-sun.png';
 
   function draw() {
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(sun, 800, 30, 110, 110);
-
+    handleLevels();
     for (var i = 0; i < boxes.length; i++) {
       drawBox(boxes[i]);
       boxes[i].draw(ctx);

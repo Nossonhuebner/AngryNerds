@@ -152,6 +152,8 @@ class Shape {
     this.width = width;
     this.srcArr = srcArr;
     this.hits = 0;
+    this.bx = 0;
+    this.by = 0;
   }
 
   draw(ctx){
@@ -161,9 +163,10 @@ class Shape {
           this.height = 0;
           this.x = 0;
           this.y = 0;
-        }
+        } else {
       this.img.src = this.srcArr[this.hits];
       ctx.drawImage(this.img, this.x, this.y, 75, 75);
+      }
       // this.ctx.beginPath();
       // this.ctx.rect(this.x, this.y, this.height, this.width);
       // this.ctx.fillStyle = "#f10d0d";
@@ -256,6 +259,38 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./levels/level2.js":
+/*!**************************!*\
+  !*** ./levels/level2.js ***!
+  \**************************/
+/*! exports provided: level2 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "level2", function() { return level2; });
+/* harmony import */ var _elements_ball__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../elements/ball */ "./elements/ball.js");
+/* harmony import */ var _elements_box__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../elements/box */ "./elements/box.js");
+
+
+
+// let ballImg = new Image();
+// ballImg.src = './assets/images/nerd.png';
+// let ball1 = new Ball(ctx, ballImg, x, y, ballRadius);
+// let ball2 = new Ball(ctx, ballImg, x, y - 10, ballRadius);
+// let ball3 = new Ball(ctx, ballImg, x, y - 20, ballRadius);
+let boxX = 600;
+let boxY = 300;
+
+let boxImg = new Image();
+const srcArr = ['./assets/images/heroku/heroku.png', './assets/images/heroku/heroku-orange.png', './assets/images/heroku/heroku-red.png'];
+const box1 = new _elements_box__WEBPACK_IMPORTED_MODULE_1__["default"](boxImg, boxX-50, boxY, 75, 50, srcArr);
+const box2 = new _elements_box__WEBPACK_IMPORTED_MODULE_1__["default"](boxImg, boxX+ 50, boxY, 75, 50, srcArr);
+const level2 = [box1, box2];
+
+
+/***/ }),
+
 /***/ "./main.js":
 /*!*****************!*\
   !*** ./main.js ***!
@@ -270,6 +305,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _elements_box__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./elements/box */ "./elements/box.js");
 /* harmony import */ var _elements_sling__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./elements/sling */ "./elements/sling.js");
 /* harmony import */ var _levels_level1__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./levels/level1 */ "./levels/level1.js");
+/* harmony import */ var _levels_level2__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./levels/level2 */ "./levels/level2.js");
+
 
 
 
@@ -298,8 +335,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let action = false;
   let angle = 4;
   let validHeight = false;
-  const levels = [_levels_level1__WEBPACK_IMPORTED_MODULE_4__["level1"]];
-  const boxes = levels[0];
+  const levels = [_levels_level1__WEBPACK_IMPORTED_MODULE_4__["level1"], _levels_level2__WEBPACK_IMPORTED_MODULE_5__["level2"]];
+  let boxes = levels[0];
 
   const boing = new Audio();
   boing.src = "./assets/audio/boing.wav";
@@ -351,6 +388,24 @@ document.addEventListener('DOMContentLoaded', () => {
      return Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
     };
 
+    function isLevelOver(){
+      debugger
+      for (var i = 0; i < boxes.length; i++) {
+        if (boxes[i].height !== 0) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function handleLevels() {
+      debugger
+      if (isLevelOver() && levels.length > 1) {
+        levels.shift();
+        boxes = levels[0];
+      }
+    }
+
 
   function drawBox(box) {
 
@@ -362,6 +417,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (ball.x + ballRadius > box.x && ball.x - ballRadius < box.x + length && ball.y + ballRadius > box.y && ball.y - ballRadius < box.y + height) {
       hit = true;
       box.hits += 1;
+      console.log(box.hits);
+
       explosion.play();
       stop(launch);
 
@@ -377,23 +434,23 @@ document.addEventListener('DOMContentLoaded', () => {
       // // tempImg.length = 300;
       // box.img = tempImg;
 
-      bx = dx;
-      by = dy;
-      dx = -dx;
-      dy = -dy;
+      box.bx = dx;
+      box.by = dy;
+      dx = -(dx+3);
+      dy = -(dy+3);
     }
-    if (box.x + bx > canvas.width - length || box.x + bx < 0) {
-      bx = -bx;
-    } else if (by + box.y > canvas.height - height - 28 || by + box.y < height) {
-      by = -by * 0.8;
+    if (box.x + box.bx > canvas.width - length || box.x + box.bx < 0) {
+      box.bx = -box.bx;
+    } else if (box.by + box.y > canvas.height - height - 28 || box.by + box.y < height) {
+      box.by = -box.by * 0.8;
     }
     if (hit) {
-      if (box.y + by + (2 * gravity) + height < canvas.height - 38) {
-        by += (2 * gravity);
+      if (box.y + box.by + (2 * gravity) + height < canvas.height - 38) {
+        box.by += (2 * gravity);
       }
-      bx *= friction;
-      box.x += bx;
-      box.y += by;
+      box.bx *= friction;
+      box.x += box.bx;
+      box.y += box.by;
     }
   }
 
@@ -409,15 +466,14 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.lineTo(400, 380);
     ctx.lineWidth = 10;
     ctx.stroke();
-    debugger
     if (ball.x + ballRadius > 400 && ball.x - ballRadius < 410 && ball.y + ballRadius > 250) {
       dx = -dx;
     }
 
     for (var i = 0; i < boxes.length; i++) {
       if (boxes[i].x + boxes[i].width > 400 && boxes[i].x < 410 && boxes[i].y + boxes[i].height > 250) {
-        bx = -bx;
-        boxes[i].x += bx;
+        boxes[i].bx = -boxes[i].bx;
+        boxes[i].x += boxes[i].bx;
       }
     }
   }
@@ -449,9 +505,10 @@ document.addEventListener('DOMContentLoaded', () => {
   sun.src = './assets/images/coffee-sun.png';
 
   function draw() {
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(sun, 800, 30, 110, 110);
-
+    handleLevels();
     for (var i = 0; i < boxes.length; i++) {
       drawBox(boxes[i]);
       boxes[i].draw(ctx);

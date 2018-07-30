@@ -7,6 +7,8 @@ class Shape {
     this.width = width;
     this.srcArr = srcArr;
     this.hits = 0;
+    this.bx = 0;
+    this.by = 0;
   }
 
   draw(ctx){
@@ -16,9 +18,10 @@ class Shape {
           this.height = 0;
           this.x = 0;
           this.y = 0;
-        }
+        } else {
       this.img.src = this.srcArr[this.hits];
       ctx.drawImage(this.img, this.x, this.y, 75, 75);
+      }
       // this.ctx.beginPath();
       // this.ctx.rect(this.x, this.y, this.height, this.width);
       // this.ctx.fillStyle = "#f10d0d";
