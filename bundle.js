@@ -123,8 +123,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class Box extends _shape__WEBPACK_IMPORTED_MODULE_0__["default"] {
-  constructor(ctx, img, x, y, height, width) {
-    super(ctx, img, x, y, height, width);
+  constructor(ctx, img, x, y, height, width, srcArr) {
+    super(ctx, img, x, y, height, width, srcArr);
   }
 }
 
@@ -144,19 +144,25 @@ class Box extends _shape__WEBPACK_IMPORTED_MODULE_0__["default"] {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 class Shape {
-  constructor(ctx, img, x, y, height, width) {
+  constructor(ctx, img, x, y, height, width, srcArr) {
     this.ctx = ctx ;
     this.img = img;
     this.x = x;
     this.y = y;
     this.height = height;
     this.width = width;
-
+    this.srcArr = srcArr;
   }
 
   draw(){
 
-    if (this.width) {
+    if (this.width) { //box
+      if (this.hits) {
+        if (this.hits > 2) {
+          return null;
+        }
+        this.img.src = this.srcArr[this.hits];
+      }
       this.ctx.drawImage(this.img, this.x, this.y, 75, 75);
       // this.ctx.beginPath();
       // this.ctx.rect(this.x, this.y, this.height, this.width);
@@ -313,19 +319,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const height = 75;
     const length = 75;
-    const imgData = ctx.getImageData(600, 300, height, height);
-    const pix = imgData.data;
+    // const imgData = ctx.getImageData(600, 300, height, height);
+    // const pix = imgData.data;
 
     if (ball.x + ballRadius > box.x && ball.x - ballRadius < box.x + length && ball.y + ballRadius > box.y && ball.y - ballRadius < box.y + height) {
       hit = true;
+      box.hits += 1;
       explosion.play();
       stop(launch);
 
-      for (let i = 0, n = pix.length; i <n; i += 4) {
-          pix[i] += 75;
-          pix[i+2] -= 10;
-      }
-      ctx.putImageData(imgData, box.x, box.y);
+      // for (let i = 0, n = pix.length; i <n; i += 4) {
+      //     pix[i] += 75;
+      //     pix[i+2] -= 10;
+      // }
+      // ctx.putImageData(imgData, box.x, box.y);
       // let tempImg = new Image();
 
       // tempImg.src = canvas.toDataURL("image/png");
@@ -398,8 +405,10 @@ document.addEventListener('DOMContentLoaded', () => {
   let ball = new _elements_ball__WEBPACK_IMPORTED_MODULE_1__["default"](ctx, ballImg, x, y, ballRadius);
 
   let boxImg = new Image();
-  boxImg.src = './assets/images/webpack-logo.png';
-  const box = new _elements_box__WEBPACK_IMPORTED_MODULE_2__["default"](ctx, boxImg, boxX, boxY, 50, 50);
+  const srcArr = ['./assets/images/webpack/webpack-logo.png', './assets/images/webpack/webpack-logo-orange.png','./assets/images/webpack/webpack-logo-red.png'];
+  boxImg.src = srcArr[0];
+  const box = new _elements_box__WEBPACK_IMPORTED_MODULE_2__["default"](ctx, boxImg, boxX, boxY, 50, 50, srcArr);
+  box.hits = 0;
 
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);

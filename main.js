@@ -75,19 +75,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const height = 75;
     const length = 75;
-    const imgData = ctx.getImageData(600, 300, height, height);
-    const pix = imgData.data;
+    // const imgData = ctx.getImageData(600, 300, height, height);
+    // const pix = imgData.data;
 
     if (ball.x + ballRadius > box.x && ball.x - ballRadius < box.x + length && ball.y + ballRadius > box.y && ball.y - ballRadius < box.y + height) {
       hit = true;
+      box.hits += 1;
       explosion.play();
       stop(launch);
 
-      for (let i = 0, n = pix.length; i <n; i += 4) {
-          pix[i] += 75;
-          pix[i+2] -= 10;
-      }
-      ctx.putImageData(imgData, box.x, box.y);
+      // for (let i = 0, n = pix.length; i <n; i += 4) {
+      //     pix[i] += 75;
+      //     pix[i+2] -= 10;
+      // }
+      // ctx.putImageData(imgData, box.x, box.y);
       // let tempImg = new Image();
 
       // tempImg.src = canvas.toDataURL("image/png");
@@ -160,8 +161,10 @@ document.addEventListener('DOMContentLoaded', () => {
   let ball = new Ball(ctx, ballImg, x, y, ballRadius);
 
   let boxImg = new Image();
-  boxImg.src = './assets/images/webpack-logo.png';
-  const box = new Box(ctx, boxImg, boxX, boxY, 50, 50);
+  const srcArr = ['./assets/images/webpack/webpack-logo.png', './assets/images/webpack/webpack-logo-orange.png','./assets/images/webpack/webpack-logo-red.png'];
+  boxImg.src = srcArr[0];
+  const box = new Box(ctx, boxImg, boxX, boxY, 50, 50, srcArr);
+  box.hits = 0;
 
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
