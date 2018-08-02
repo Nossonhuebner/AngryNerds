@@ -3,11 +3,12 @@
   <head>
     <meta charset="utf-8"/>
     <title>Angry Nerds</title>
+    <link href="https://fonts.googleapis.com/css?family=Rock+Salt" rel="stylesheet">
     <style>
       * {
         /* padding: 50px; */
         margin: 50px;
-        background-color: #2b7830;
+        background-color: #f4c948;
 
       }
 
@@ -26,21 +27,43 @@
       .nerd-icon {
         height: 75px;
       }
+
+      .links {
+        display: flex;
+        justify-content: center;
+      }
+
+      .link-icon {
+        width: 100px;
+        margin: 35px;
+      }
+
+      .header {
+        font-family: 'Rock Salt', cursive;
+        display: flex;
+        justify-content: center;
+        margin: 30px;
+      }
     </style>
   </head>
   <body>
     <script type="text/javascript" src="bundle.js"></script>
-    <h1>Angry nerds</h1>
-    <div class="main">
+    <div class="header">
       <img class="nerd-icon" src="./assets/images/nerd.png" alt="nerd">
+      <h1>Angry nerds</h1>
+      <img class="nerd-icon" src="./assets/images/nerd.png" alt="nerd">
+    </div>
+    <div class="main">
       <canvas id="myCanvas" width="950" height="420" style="background: url('./assets/images/angry_background.png'); background-repeat: no-repeat;
     background-size: 100%;
     background-position-y: -289px;">A
       </canvas>
-      <img class="nerd-icon" src="./assets/images/nerd.png" alt="nerd">
     </div>
-    <a href="https://github.com/Nossonhuebner">
-      <img src="https://camo.githubusercontent.com/7710b43d0476b6f6d4b4b2865e35c108f69991f3/68747470733a2f2f7777772e69636f6e66696e6465722e636f6d2f646174612f69636f6e732f6f637469636f6e732f313032342f6d61726b2d6769746875622d3235362e706e67" alt="github">
-    </a>
-  </body>
+    <div class="links">
+      <a href="https://www.linkedin.com/in/nosson-huebner/"><img class="link-icon" src="http://wfarm2.dataknet.com/static/resources/icons/set26/1bc50a8d6d2c.png" alt="linkedin"></a>
+      <a href="https://github.com/Nossonhuebner"><img class="link-icon" src="https://www.freeiconspng.com/uploads/github-logo-icon-30.png" alt="github"></a>
+      <a href="https://angel.co/nosson-huebner"><img class="link-icon" src="https://cdn.iconscout.com/public/images/icon/free/png-512/angellist-logo-3ad5d19b5b8d32d5-512x512.png" alt="Angelist"></a>
+    </div>
+  </a>
+</body>
 </html>
