@@ -389,7 +389,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     function isLevelOver(){
-      debugger
       for (var i = 0; i < boxes.length; i++) {
         if (boxes[i].height !== 0) {
           return false;
@@ -399,7 +398,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleLevels() {
-      debugger
       if (isLevelOver() && levels.length > 1) {
         levels.shift();
         boxes = levels[0];
