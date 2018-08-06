@@ -8,6 +8,8 @@ import { level2 } from './levels/level2';
 document.addEventListener('DOMContentLoaded', () => {
   var canvas = document.getElementById("myCanvas");
   const ctx = canvas.getContext("2d");
+  ctx.canvas.width  = window.innerWidth;
+  // ctx.canvas.height = window.innerHeight;
   const ballRadius = 25;
   var x = 125;
   var y = 288;
@@ -34,8 +36,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let ballImg = new Image();
   ballImg.src = './assets/images/nerd.png';
+
   let balls = [];
   let retiredBalls = [];
+
   for (var i = 0; i < 3; i++) {
     balls.push(new Ball(ballImg, x + (30 * i), y, ballRadius));
   }
@@ -109,6 +113,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if (isLevelOver() && levels.length > 1) {
         levels.shift();
         boxes = levels[0];
+         balls = [];
+         retiredBalls = [];
+
+        for (var i = 0; i < 3; i++) {
+          balls.push(new Ball(ballImg, x + (30 * i), y, ballRadius));
+        }
+        let ball = balls[0];
       }
     }
 
@@ -183,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function draw() {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(sun, 800, 30, 110, 110);
+    ctx.drawImage(sun, 1000, 20, 110, 110);
     handleLevels();
 
     for (var i = 0; i < boxes.length; i++) {
