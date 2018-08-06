@@ -4,13 +4,13 @@ class Sling {
       ctx.strokeStyle = 'black';
       ctx.beginPath();
       ctx.moveTo(100, 276);
-      ctx.lineTo(x, y);
+      ctx.lineTo(Math.min(x, 400), y);
       ctx.lineWidth = 1;
       ctx.stroke();
 
       ctx.strokeStyle = 'black';
       ctx.beginPath();
-      ctx.moveTo(x, y);
+      ctx.moveTo(Math.min(x, 400), y);
       ctx.lineTo(150, 300);
       ctx.lineWidth = 1;
       ctx.stroke();

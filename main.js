@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let mpos;
   let released = false;
   let action = false;
+  let stopped = true;
   let angle = 4;
   let validHeight = false;
   const levels = [level1, level2];
@@ -36,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let balls = [];
   let retiredBalls = [];
   for (var i = 0; i < 3; i++) {
-    balls.push(new Ball(ballImg, x + (10 * i), y, ballRadius));
+    balls.push(new Ball(ballImg, x + (30 * i), y, ballRadius));
   }
   let ball = balls[0];
 
@@ -66,20 +67,23 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
     canvas.addEventListener('mousedown', (e) => {
-      action = false;
-      released = false;
-      mouseHold = true;
-      validHeight = false;
-      // ball = new Ball(ctx, x, y, ballRadius);
-      stop(launch);
-
+      if (stopped) {
+        action = false;
+        released = false;
+        mouseHold = true;
+        validHeight = false;
+        // ball = new Ball(ctx, x, y, ballRadius);
+        stop(launch);
+      }
     });
     canvas.addEventListener('mouseup', (e) => {
-      action = true;
-      mouseHold = false;
-      released = true;
-      pos = null;
-      launch.play();
+      if (stopped) {
+        action = true;
+        mouseHold = false;
+        released = true;
+        pos = null;
+        launch.play();
+      }
     });
     canvas.addEventListener('mousemove', (e) => {
       mpos = mousePos(canvas, e);
@@ -111,34 +115,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function drawBox(box) {
     const height = 75;
-    const length = 75;
-    if (ball.x + ballRadius > box.x && ball.x - ballRadius < box.x + length && ball.y + ballRadius > box.y && ball.y - ballRadius < box.y + height) {
+    // const length = 75;
+    if (ball.x + ballRadius > box.x && ball.x - ballRadius < box.x + box.width && ball.y + ballRadius > box.y ) {
       hit = true;
       box.hits += 1;
       console.log(box.hits);
 
       explosion.play();
       stop(launch);
-      box.bx = dx;
-      box.by = dy;
-      if (ball.y < box.y || ball.y > box.y + height) { // top hit
-        dy = -(dy+3);
+      if (ball.y < box.y || ball.y > box.y + box.height) { // top hit
+        dy = -(Math.abs(dy));
       } else {
-        dx = -(dx+3);
+        dx = -(dx);
       }
+      box.bx = -dx;
+      box.by = -dy;
     }
-    if (box.x + box.bx > canvas.width - length || box.x + box.bx < 0) {
+
+    if (box.x + box.bx > canvas.width - box.width || box.x + box.bx < 0) {
       box.bx = -box.bx;
-    } else if (box.by + box.y > canvas.height - height - 28 || box.by + box.y < height) {
-      box.by = -box.by * 0.8;
+    } else if (box.by + box.y > canvas.height - height - 28 || box.by + box.y < 0) {
+      box.by = -(Math.abs(box.by * 0.8));
     }
+
     if (hit) {
-      if (box.y + box.by + (2 * gravity) + height < canvas.height - 38) {
+      if (box.y + box.by + (2 * gravity) + box.height < canvas.height - 38) {
         box.by += (2 * gravity);
       }
       box.bx *= friction;
       box.x += box.bx;
-      box.y += box.by;
+      box.y = Math.min((canvas.height - height - 28), (box.y + box.by));
     }
   }
 
@@ -154,8 +160,13 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.lineTo(400, 380);
     ctx.lineWidth = 10;
     ctx.stroke();
-    if (ball.x + ballRadius > 400 && ball.x - ballRadius < 410 && ball.y + ballRadius > 250) {
-      dx = -dx;
+
+    if (ball.x + ballRadius > 400 && ball.x - ballRadius < 410) {
+      if (ball.y + ballRadius > 260) {
+        dx = -(dx);
+      } else if (ball.y + ballRadius < 260 && ball.y + ballRadius > 245){
+      dy = -(Math.abs(dy));
+      }
     }
 
     for (var i = 0; i < boxes.length; i++) {
@@ -185,6 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     for (let i = 0; i < balls.length; i++) {
+
       balls[i].draw(ctx);
     }
     drawFence();
@@ -193,14 +205,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (action && ball.y < canvas.height - ball.height - 28){
       validHeight = true;
     }
-    if (mouseHold && mpos.y < canvas.height - ball.height) {
-      ball.x = mpos.x;
+    if (mouseHold && mpos.y < canvas.height - ball.height && stopped) {
+      ball.x = Math.min(mpos.x, 400);
       ball.y = mpos.y;
     } else if (released) {
-      retiredBalls.push(balls.pop());
+      stopped = false;
       released = false;
       const pullY = y - mpos.y;
-      const pullX = x - mpos.x;
+      const pullX = x - Math.min(mpos.x, 400);
 
       dy = pullY / 5;
       dx = pullX / 5;
@@ -219,9 +231,13 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       ball.y += dy;
       ball.x += dx;
+      if (Math.abs(dy) < 0.02 && ball.y > canvas.height - 70) {
+        stopped = true;
+        retiredBalls.push(balls.shift());
+        ball = balls[0];
+      }
     }
     ball.draw(ctx);
-
     requestAnimationFrame(draw);
   }
 

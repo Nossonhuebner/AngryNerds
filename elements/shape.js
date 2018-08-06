@@ -12,7 +12,6 @@ class Shape {
   }
 
   draw(ctx){
-    debugger
     if (this.width) { //box
       if (this.hits > 2) {
           this.width = 1;
