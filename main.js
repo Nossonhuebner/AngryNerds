@@ -8,11 +8,11 @@ import { level2 } from './levels/level2';
 document.addEventListener('DOMContentLoaded', () => {
   var canvas = document.getElementById("myCanvas");
   const ctx = canvas.getContext("2d");
-  ctx.canvas.width  = window.innerWidth;
-  // ctx.canvas.height = window.innerHeight;
+  ctx.canvas.width  = 1341;
+  ctx.canvas.height = 485;
   const ballRadius = 25;
   var x = 125;
-  var y = 288;
+  var y = 333;
   var dx = 2;
   var dy = -2;
   var gravity = 0.5;
@@ -32,6 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let validHeight = false;
   const levels = [level1, level2];
   let boxes = levels[0];
+  let modal = false;
+  let gameOver = false;
 
 
   let ballImg = new Image();
@@ -41,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let retiredBalls = [];
 
   for (var i = 0; i < 3; i++) {
-    balls.push(new Ball(ballImg, x + (30 * i), y, ballRadius));
+    balls.push(new Ball(ballImg, x + (30 * i), 388, ballRadius));
   }
   let ball = balls[0];
 
@@ -70,35 +72,60 @@ document.addEventListener('DOMContentLoaded', () => {
     audio.currentTime = 0;
   }
 
-    canvas.addEventListener('mousedown', (e) => {
-      if (stopped) {
-        action = false;
-        released = false;
-        mouseHold = true;
-        validHeight = false;
-        // ball = new Ball(ctx, x, y, ballRadius);
-        stop(launch);
-      }
-    });
-    canvas.addEventListener('mouseup', (e) => {
-      if (stopped) {
-        action = true;
-        mouseHold = false;
-        released = true;
-        pos = null;
-        launch.play();
-      }
-    });
-    canvas.addEventListener('mousemove', (e) => {
-      mpos = mousePos(canvas, e);
-    });
+  canvas.addEventListener('mousedown', (e) => {
+    if (stopped) {
+      action = false;
+      released = false;
+      mouseHold = true;
+      validHeight = false;
+      // ball = new Ball(ctx, x, y, ballRadius);
+      stop(launch);
+    }
+  });
+  canvas.addEventListener('mouseup', (e) => {
+    if (stopped) {
+      action = true;
+      mouseHold = false;
+      released = true;
+      pos = null;
+      launch.play();
+    }
+  });
+  canvas.addEventListener('mousemove', (e) => {
+    mpos = mousePos(canvas, e);
+  });
 
-    const getDistance = (x1,y1, x2, y2) => {
-     let xDistance = x2 - x1;
-     let yDistance = y2 - y1;
+  document.addEventListener('keydown', (e) => {
+    if (e.key === " ") {
+      gameOver = false;
+      console.log(e);
+    }
+  });
+    // const getDistance = (x1,y1, x2, y2) => {
+    //  let xDistance = x2 - x1;
+    //  let yDistance = y2 - y1;
+    //
+    //  return Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
+    // };
+    function gameOverModal() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.rect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = 'rgba(230, 24, 24, 0.58)';
+      ctx.fill();
+      ctx.fillStyle = '#06326f';
+      ctx.font = "30px 'Rock Salt'";
+      ctx.fillText("Game Over",canvas.width / 2 - 100, canvas.height / 2);
+      ctx.font = "20px 'Rock Salt'";
+      ctx.fillText("Hit space to play again",canvas.width / 2 - 130, canvas.height / 2 + 75);
+    }
 
-     return Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
-    };
+    function levelsModal() {
+
+    }
+
+    function startModal() {
+
+    }
 
     function isLevelOver(){
       for (var i = 0; i < boxes.length; i++) {
@@ -135,8 +162,10 @@ document.addEventListener('DOMContentLoaded', () => {
       explosion.play();
       stop(launch);
       if (ball.y < box.y || ball.y > box.y + box.height) { // top hit
+        ball.y -= 10;
         dy = -(Math.abs(dy));
       } else {
+        ball.x = ball.x < box.x ? ball.x -10 : ball.x + 10;
         dx = -(dx);
       }
       box.bx = -dx;
@@ -167,21 +196,21 @@ document.addEventListener('DOMContentLoaded', () => {
   function drawFence() {
     ctx.strokeStyle = '#2f1a08';
     ctx.beginPath();
-    ctx.moveTo(400, 250);
-    ctx.lineTo(400, 380);
+    ctx.moveTo(400, 280);
+    ctx.lineTo(400, 450);
     ctx.lineWidth = 10;
     ctx.stroke();
 
     if (ball.x + ballRadius > 400 && ball.x - ballRadius < 410) {
-      if (ball.y + ballRadius > 260) {
+      if (ball.y + ballRadius > 280) {
         dx = -(dx);
-      } else if (ball.y + ballRadius < 260 && ball.y + ballRadius > 245){
+      } else if (ball.y + ballRadius < 280 && ball.y + ballRadius > 260){
       dy = -(Math.abs(dy));
       }
     }
 
     for (var i = 0; i < boxes.length; i++) {
-      if (boxes[i].x + boxes[i].width > 400 && boxes[i].x < 410 && boxes[i].y + boxes[i].height > 250) {
+      if (boxes[i].x + boxes[i].width > 400 && boxes[i].x < 410 && boxes[i].y + boxes[i].height > 280) {
         boxes[i].bx = -boxes[i].bx;
         boxes[i].x += boxes[i].bx;
       }
@@ -192,8 +221,12 @@ document.addEventListener('DOMContentLoaded', () => {
   sun.src = './assets/images/coffee-sun.png';
 
   function draw() {
-
+    if (gameOver) {
+      gameOverModal();
+      return;
+    }
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
     ctx.drawImage(sun, 1000, 20, 110, 110);
     handleLevels();
 
@@ -201,10 +234,10 @@ document.addEventListener('DOMContentLoaded', () => {
       drawBox(boxes[i]);
       boxes[i].draw(ctx);
     }
-
-    for (var j = 0; j < retiredBalls.length; j++) {
-      retiredBalls[j].draw(ctx);
-    }
+    //
+    // for (var j = 0; j < retiredBalls.length; j++) {
+    //   retiredBalls[j].draw(ctx);
+    // }
 
     for (let i = 0; i < balls.length; i++) {
 
@@ -242,9 +275,13 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       ball.y += dy;
       ball.x += dx;
-      if (Math.abs(dy) < 0.02 && ball.y > canvas.height - 70) {
+      if (Math.abs(dy) < 0.05 && ball.y > canvas.height - 150 ) {
         stopped = true;
-        retiredBalls.push(balls.shift());
+        if (balls.length > 1) {
+          retiredBalls.push(balls.shift());
+        } else {
+          gameOver = true;
+        }
         ball = balls[0];
       }
     }
