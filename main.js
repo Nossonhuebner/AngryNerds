@@ -30,11 +30,12 @@ document.addEventListener('DOMContentLoaded', () => {
   let stopped = true;
   let angle = 4;
   let validHeight = false;
-  const levels = [level1, level2];
+  let levels = [level1, level2];
   let boxes = levels[0];
   let modal = false;
   let gameOver = false;
-
+  let levelOver = false;
+  let start = false;
 
   let ballImg = new Image();
   ballImg.src = './assets/images/nerd.png';
@@ -73,6 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   canvas.addEventListener('mousedown', (e) => {
+    if (start && !levelOver && !gameOver) {
     if (stopped) {
       action = false;
       released = false;
@@ -81,24 +83,37 @@ document.addEventListener('DOMContentLoaded', () => {
       // ball = new Ball(ctx, x, y, ballRadius);
       stop(launch);
     }
+  }
   });
   canvas.addEventListener('mouseup', (e) => {
-    if (stopped) {
-      action = true;
-      mouseHold = false;
-      released = true;
-      pos = null;
-      launch.play();
-    }
+    if (start && !levelOver && !gameOver) {
+      if (stopped) {
+        action = true;
+        mouseHold = false;
+        released = true;
+        pos = null;
+        launch.play();
+      }
+  }
   });
   canvas.addEventListener('mousemove', (e) => {
-    mpos = mousePos(canvas, e);
+    if (start && !levelOver && !gameOver) {
+      mpos = mousePos(canvas, e);
+    }
   });
 
   document.addEventListener('keydown', (e) => {
-    if (e.key === " ") {
-      gameOver = false;
-      console.log(e);
+    if (e.key === "Enter") {
+      if (!start) {
+        start = true;
+      } else if (gameOver) {
+        levels = [[1],level1, level2];
+        handleLevels();
+        gameOver = false;
+      } else if (levelOver) {
+        handleLevels();
+        levelOver = false;
+      }
     }
   });
     // const getDistance = (x1,y1, x2, y2) => {
@@ -116,15 +131,32 @@ document.addEventListener('DOMContentLoaded', () => {
       ctx.font = "30px 'Rock Salt'";
       ctx.fillText("Game Over",canvas.width / 2 - 100, canvas.height / 2);
       ctx.font = "20px 'Rock Salt'";
-      ctx.fillText("Hit space to play again",canvas.width / 2 - 130, canvas.height / 2 + 75);
+      ctx.fillText("Hit enter to play again",canvas.width / 2 - 130, canvas.height / 2 + 75);
     }
 
     function levelsModal() {
-
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.rect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = 'rgba(24, 230, 150, 0.58)';
+      ctx.fill();
+      ctx.fillStyle = '#06326f';
+      ctx.font = "30px 'Rock Salt'";
+      ctx.fillText("Congratulations",canvas.width / 2 - 130, canvas.height / 2);
+      ctx.font = "20px 'Rock Salt'";
+      ctx.fillText("Hit enter to continue",canvas.width / 2 - 130, canvas.height / 2 + 75);
     }
 
     function startModal() {
-
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.rect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = 'rgba(24, 200, 255, 0.58)';
+      ctx.fill();
+      ctx.fillStyle = '#06326f';
+      ctx.font = "30px 'Rock Salt'";
+      ctx.fillText("Angry Nerds",canvas.width / 2 - 100, canvas.height / 2 - 100);
+      ctx.font = "20px 'Rock Salt'";
+      ctx.fillText("Use the mouse to drag and unleash the nerds!",400, canvas.height / 2 + 75);
+      ctx.fillText("Hit enter to play",canvas.width / 2 - 130, canvas.height / 2 + 120);
     }
 
     function isLevelOver(){
@@ -137,17 +169,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleLevels() {
-      if (isLevelOver() && levels.length > 1) {
-        levels.shift();
-        boxes = levels[0];
-         balls = [];
-         retiredBalls = [];
-
-        for (var i = 0; i < 3; i++) {
-          balls.push(new Ball(ballImg, x + (30 * i), y, ballRadius));
-        }
-        let ball = balls[0];
+      levels.shift();
+      boxes = levels[0];
+       balls = [];
+       retiredBalls = [];
+      for (var i = 0; i < 3; i++) {
+        balls.push(new Ball(ballImg, x + (30 * i), y, ballRadius));
       }
+      let ball = balls[0];
     }
 
 
@@ -221,71 +250,78 @@ document.addEventListener('DOMContentLoaded', () => {
   sun.src = './assets/images/coffee-sun.png';
 
   function draw() {
-    if (gameOver) {
+    if (!start) {
+      startModal();
+    } else if (gameOver) {
       gameOverModal();
-      return;
-    }
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    } else if (levelOver) {
+      levelsModal();
+    } else {
 
-    ctx.drawImage(sun, 1000, 20, 110, 110);
-    handleLevels();
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    for (var i = 0; i < boxes.length; i++) {
-      drawBox(boxes[i]);
-      boxes[i].draw(ctx);
-    }
-    //
-    // for (var j = 0; j < retiredBalls.length; j++) {
-    //   retiredBalls[j].draw(ctx);
-    // }
-
-    for (let i = 0; i < balls.length; i++) {
-
-      balls[i].draw(ctx);
-    }
-    drawFence();
-    drawString();
-
-    if (action && ball.y < canvas.height - ball.height - 28){
-      validHeight = true;
-    }
-    if (mouseHold && mpos.y < canvas.height - ball.height && stopped) {
-      ball.x = Math.min(mpos.x, 400);
-      ball.y = mpos.y;
-    } else if (released) {
-      stopped = false;
-      released = false;
-      const pullY = y - mpos.y;
-      const pullX = x - Math.min(mpos.x, 400);
-
-      dy = pullY / 5;
-      dx = pullX / 5;
-    }
-    if (action) {
-      dx *= friction;
-      if ((dy + ball.y > canvas.height - ball.height- 28  && validHeight )|| dy + ball.y < ball.height ) { //hit top / bottom
-        dy = -dy * 0.9 ;
-        stop(launch);
-      } else {
-        dy += gravity;
+      ctx.drawImage(sun, 1000, 20, 110, 110);
+      if (isLevelOver()) {
+        levelOver = true;
       }
-      if (dx + ball.x > canvas.width - ball.height || dx + ball.x < ball.height) {
-        boing.play();
-        dx = -dx;
+
+      for (var i = 0; i < boxes.length; i++) {
+        drawBox(boxes[i]);
+        boxes[i].draw(ctx);
       }
-      ball.y += dy;
-      ball.x += dx;
-      if (Math.abs(dy) < 0.05 && ball.y > canvas.height - 150 ) {
-        stopped = true;
-        if (balls.length > 1) {
-          retiredBalls.push(balls.shift());
+      //
+      // for (var j = 0; j < retiredBalls.length; j++) {
+      //   retiredBalls[j].draw(ctx);
+      // }
+
+      for (let i = 0; i < balls.length; i++) {
+
+        balls[i].draw(ctx);
+      }
+      drawFence();
+      drawString();
+
+      if (action && ball.y < canvas.height - ball.height - 28){
+        validHeight = true;
+      }
+      if (mouseHold && mpos.y < canvas.height - ball.height && stopped) {
+        ball.x = Math.min(mpos.x, 400);
+        ball.y = mpos.y;
+      } else if (released) {
+        stopped = false;
+        released = false;
+        const pullY = y - mpos.y;
+        const pullX = x - Math.min(mpos.x, 400);
+
+        dy = pullY / 5;
+        dx = pullX / 5;
+      }
+      if (action) {
+        dx *= friction;
+        if ((dy + ball.y > canvas.height - ball.height- 28  && validHeight )|| dy + ball.y < ball.height ) { //hit top / bottom
+          dy = -dy * 0.9 ;
+          stop(launch);
         } else {
-          gameOver = true;
+          dy += gravity;
         }
-        ball = balls[0];
+        if (dx + ball.x > canvas.width - ball.height || dx + ball.x < ball.height) {
+          boing.play();
+          dx = -dx;
+        }
+        ball.y += dy;
+        ball.x += dx;
+        if (Math.abs(dy) < 0.05 && ball.y > canvas.height - 150 ) {
+          stopped = true;
+          if (balls.length > 1) {
+            retiredBalls.push(balls.shift());
+          } else {
+            gameOver = true;
+          }
+          ball = balls[0];
+        }
       }
+        ball.draw(ctx);
     }
-    ball.draw(ctx);
     requestAnimationFrame(draw);
   }
 
