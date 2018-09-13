@@ -38,7 +38,7 @@ export const startModal = (ctx, canvas) => {
 
 export const mousePos = (canvas, event) => {
   const a = canvas.getBoundingClientRect();
-  pos = {
+  let pos = {
     x: event.clientX - a.left,
     y: event.clientY - a.top
   };
@@ -54,9 +54,27 @@ export const stop = (audio) => {
 export const getDistance = (x1, y1, x2, y2) => {
  let xDistance = x2 - x1;
  let yDistance = y2 - y1;
-
  return Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
 };
+
+export const collisionDetection = (ball, box) => {
+  if (getDistance((ball.x + ball.height), (ball.y + ball.height), box.x, box.y) < 15||
+      getDistance(ball.x, (ball.y + ball.height), (box.x + box.width), box.y) < 15 )  {
+      ball.dx = -(ball.dx);
+      ball.dy = -(ball.dy);
+      box.dx = -(box.dx);
+      box.dy = -(box.dy);
+  }
+};
+
+export const wallDetection = (object, canvas) => {
+  if (object.x + object.dx > canvas.width - object.width || object.x + object.dx < 0) {
+    object.dx = -object.dx;
+  } else if (object.dy + object.y > canvas.height - object.height - 28 || object.dy + object.y < 0) {
+    object.dy = -(Math.abs(object.dy * 0.8));
+  }
+};
+
 
 export const drawSun = (ctx) => {
   const sun = new Image();

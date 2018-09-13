@@ -1,8 +1,8 @@
 // import Shape from './elements/shape';
 // import Ball from './elements/ball';
 // import Box from './elements/box';
-import { gameOverModal, levelsModal, startModal,
-  mousePos, stop, getDistance, drawSun } from './util';
+import { gameOverModal, levelsModal, startModal, wallDetection,
+  mousePos, stop, getDistance, drawSun, collisionDetection } from './util';
 import Sling from './elements/sling';
 import { level1 } from './levels/level1';
 import { level2 } from './levels/level2';
@@ -12,26 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const ctx = canvas.getContext("2d");
   ctx.canvas.width  = 1341;
   ctx.canvas.height = 485;
-
-  // const ballRadius = 25;
-  // var x = 125;
-  // var y = 333;
-  // let boxX = 600;
-  // let boxY = 300;
-  // let balls = [];
-  // for (var i = 0; i < 3; i++) {
-  //   balls.push(new Ball(ballImg, x + (30 * i), 388, ballRadius));
-  // }
-  // // let ballImg = new Image();
-  // ballImg.src = './assets/images/nerd.png';
-  // let retiredBalls = [];
-  //
-  // const explosion = new Audio();
-  // explosion.src = "./assets/audio/explosion.wav";
-
-
-
-
+  const x = 125;
+  const y = 333;
   let levels = [level1, level2];
   let boxes = levels[0].boxes;
   let ball = levels[0].balls[0];
@@ -64,34 +46,31 @@ document.addEventListener('DOMContentLoaded', () => {
   launch.src = "./assets/audio/bomb_drop.wav";
 
   canvas.addEventListener('mousedown', (e) => {
-    if (start && !levelOver && !gameOver) {
-      if (stopped) {
+    // if (start && !levelOver && !gameOver) {
+    //   if (stopped) {
         action = false;
         released = false;
         mouseHold = true;
         validHeight = false;
-        // ball = new Ball(ctx, x, y, ballRadius);
         stop(launch);
-      }
-    }
+    //   }
+    // }
   });
 
   canvas.addEventListener('mouseup', (e) => {
-    if (start && !levelOver && !gameOver) {
-      if (stopped) {
+    // if (start && !levelOver && !gameOver) {
+    //   if (stopped) {
         action = true;
         mouseHold = false;
         released = true;
         pos = null;
         launch.play();
-      }
-    }
+    //   }
+    // }
   });
 
   canvas.addEventListener('mousemove', (e) => {
-    if (start && !levelOver && !gameOver) {
       mpos = mousePos(canvas, e);
-    }
   });
 
   document.addEventListener('keydown', (e) => {
@@ -110,30 +89,24 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 
-    function isLevelOver(){
-      for (var i = 0; i < boxes.length; i++) {
-        if (boxes[i].height !== 0) {
-          return false;
-        }
+  function isLevelOver(){
+    for (var i = 0; i < boxes.length; i++) {
+      if (boxes[i].height !== 0) { //there are still visible boxes in the level
+        return false;
       }
-      return true;
     }
+    return true;
+  }
 
-    function handleLevels() {
-      levels.shift();
-      boxes = levels.boxes[0];
-      balls = [];
-      retiredBalls = [];
-      // for (var i = 0; i < 3; i++) {
-      //   balls.push(new Ball(ballImg, x + (30 * i), y, ballRadius));
-      // }
-      ball = levels[0].balls[0];
-    }
-
+  function handleLevels() {
+    levels.shift();
+    boxes = levels[0].boxes;
+    balls = levels[0].balls;
+    ball = balls[0];
+  }
 
   function drawBox(box) {
     const height = 75;
-    // const length = 75;
     if (ball.x + ball.width > box.x && ball.x - ball.width < box.x + box.width && ball.y + ball.width > box.y ) {
       hit = true;
       box.hit();
@@ -151,11 +124,11 @@ document.addEventListener('DOMContentLoaded', () => {
       box.by = -dy;
     }
 
-    if (box.x + box.bx > canvas.width - box.width || box.x + box.bx < 0) {
-      box.bx = -box.bx;
-    } else if (box.by + box.y > canvas.height - height - 28 || box.by + box.y < 0) {
-      box.by = -(Math.abs(box.by * 0.8));
-    }
+    // if (box.x + box.bx > canvas.width - box.width || box.x + box.bx < 0) {
+    //   box.bx = -box.bx;
+    // } else if (box.by + box.y > canvas.height - height - 28 || box.by + box.y < 0) {
+    //   box.by = -(Math.abs(box.by * 0.8));
+    // }
 
     if (hit) {
       if (box.y + box.by + (2 * gravity) + box.height < canvas.height - 38) {
@@ -167,8 +140,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  const sling = new Sling(ctx, mouseHold, ball.x, ball.y);
   function drawString() {
-    const sling = new Sling(ctx, mouseHold, ball.x, ball.y);
+    sling.draw(mouseHold, ball.x, ball.y);
   }
 
 
@@ -196,42 +170,36 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-    function getStatus() {
-      if (!start) {
-        return startModal(ctx, canvas);
-      } else if (gameOver) {
-        return  gameOverModal(ctx, canvas);
-      } else if (levelOver) {
-        return levelsModal(ctx, canvas);
-      }
-    }
-
-
 
   function draw() {
-    if (isLevelOver()) {
-      levelOver = true;
-    }
-    getStatus();
-
+    // if (isLevelOver()) {
+    //   levelOver = true;
+    // }
+    if (!start) {
+       startModal(ctx, canvas);
+    } else if (gameOver) {
+        gameOverModal(ctx, canvas);
+    } else if (levelOver) {
+       levelsModal(ctx, canvas);
+    } else {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawSun(ctx);
+    drawFence();
+    drawString();
 
-
-    for (var i = 0; i < boxes.length; i++) {
-      drawBox(boxes[i]);
+    for (let i = 0; i < boxes.length; i++) {
+      collisionDetection(ball, boxes[i]);
+      wallDetection(boxes[i], canvas);
       boxes[i].draw(ctx);
     }
 
     for (let i = 0; i < levels[0].balls.length; i++) {
       levels[0].balls[i].draw(ctx);
     }
-    drawFence();
-    drawString();
-
-    if (action && ball.y < canvas.height - ball.height - 28){
+    if (action && ball.y < canvas.height - ball.height - 28) {
       validHeight = true;
     }
+
     if (mouseHold && mpos.y < canvas.height - ball.height && stopped) {
       ball.x = Math.min(mpos.x, 400);
       ball.y = mpos.y;
@@ -241,23 +209,22 @@ document.addEventListener('DOMContentLoaded', () => {
       const pullY = y - mpos.y;
       const pullX = x - Math.min(mpos.x, 400);
 
-      dy = pullY / 5;
-      dx = pullX / 5;
+      ball.dy = pullY / 5;
+      ball.dx = pullX / 5;
     }
     if (action) {
-      dx *= friction;
-      if ((dy + ball.y > canvas.height - ball.height- 28  && validHeight )|| dy + ball.y < ball.height ) { //hit top / bottom
-        dy = -dy * 0.9 ;
+      ball.dx *= friction;
+      if ((ball.dy + ball.y > canvas.height - ball.height- 28  && validHeight )|| ball.dy + ball.y < ball.height ) { //hit top / bottom
+        ball.dy = -ball.dy * 0.9 ;
         stop(launch);
       } else {
-        dy += gravity;
+        ball.dy += gravity;
       }
-      if (dx + ball.x > canvas.width - ball.height || dx + ball.x < ball.height) {
-        boing.play();
-        dx = -dx;
-      }
-      ball.y += dy;
-      ball.x += dx;
+      wallDetection(ball, canvas);
+
+      ball.y += ball.dy;
+      ball.x += ball.dx;
+
       if (Math.abs(dy) < 0.05 && ball.y > canvas.height - 150 ) {
         stopped = true;
         if (balls.length > 1) {
@@ -269,9 +236,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
     ball.draw(ctx);
+  }
     requestAnimationFrame(draw);
   }
-
   draw();
 
 });

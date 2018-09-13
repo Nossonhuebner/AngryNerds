@@ -7,6 +7,7 @@ class Box extends Shape {
     this.explosion.src = "./assets/audio/explosion.wav";
   }
 
+
   draw(ctx) {
     if (this.hits > 2) { //reduce visibilty if dead
       this.width = 1;

@@ -7,7 +7,7 @@ class Shape {
     this.width = width;
     this.srcArr = srcArr;
     this.hits = 0;
-    this.bx = 0;
+    this.dx = 0;
     this.by = 0;
   }
 }

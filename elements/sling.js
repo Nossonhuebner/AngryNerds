@@ -1,27 +1,36 @@
 class Sling {
   constructor(ctx, mouseHold, x, y) {
-      if (mouseHold) {
-      ctx.strokeStyle = 'black';
-      ctx.beginPath();
-      ctx.moveTo(100, 316);
-      ctx.lineTo(Math.min(x, 400), y);
-      ctx.lineWidth = 1;
-      ctx.stroke();
+    this.mouseHold = mouseHold;
+    this.ctx = ctx;
+    this.x = x;
+    this.y = y;
+  }
 
-      ctx.strokeStyle = 'black';
-      ctx.beginPath();
-      ctx.moveTo(Math.min(x, 400), y);
-      ctx.lineTo(150, 350);
-      ctx.lineWidth = 1;
-      ctx.stroke();
-    } else {
-      ctx.strokeStyle = 'black';
-      ctx.beginPath();
-      ctx.moveTo(100, 316);
-      ctx.lineTo(150, 350);
-      ctx.lineWidth = 1;
-      ctx.stroke();
-    }
+  draw(mouseHold, x, y) {
+    this.x = x;
+    this.y = y;
+    if (mouseHold) {
+    this.ctx.strokeStyle = 'black';
+    this.ctx.beginPath();
+    this.ctx.moveTo(100, 316);
+    this.ctx.lineTo(Math.min(x, 400), y);
+    this.ctx.lineWidth = 1;
+    this.ctx.stroke();
+
+    this.ctx.strokeStyle = 'black';
+    this.ctx.beginPath();
+    this.ctx.moveTo(Math.min(x, 400), y);
+    this.ctx.lineTo(150, 350);
+    this.ctx.lineWidth = 1;
+    this.ctx.stroke();
+  } else {
+    this.ctx.strokeStyle = 'black';
+    this.ctx.beginPath();
+    this.ctx.moveTo(100, 316);
+    this.ctx.lineTo(150, 350);
+    this.ctx.lineWidth = 1;
+    this.ctx.stroke();
+  }
   }
 
 }
