@@ -103,6 +103,10 @@ class Ball extends _shape__WEBPACK_IMPORTED_MODULE_0__["default"] {
     super(img, x, y, ballRadius);
   }
 
+  draw(ctx) {
+    ctx.drawImage(this.img, this.x - 12, this.y - 12, this.height, this.height);
+  }
+
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (Ball);
@@ -125,7 +129,27 @@ __webpack_require__.r(__webpack_exports__);
 class Box extends _shape__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor(img, x, y, height, width, srcArr) {
     super(img, x, y, height, width, srcArr);
+    this.explosion = new Audio();
+    this.explosion.src = "./assets/audio/explosion.wav";
   }
+
+  draw(ctx) {
+    if (this.hits > 2) { //reduce visibilty if dead
+      this.width = 1;
+      this.height = 0;
+      this.x = 0;
+      this.y = 0;
+    } else {
+      this.img.src = this.srcArr[this.hits];
+      ctx.drawImage(this.img, this.x, this.y, 75, 75);
+    }
+  }
+
+  hit() {
+    this.explosion.play();
+    this.hits += 1;
+  }
+
 }
 
 
@@ -154,34 +178,6 @@ class Shape {
     this.hits = 0;
     this.bx = 0;
     this.by = 0;
-  }
-
-  draw(ctx){
-    if (this.width) { //box
-      if (this.hits > 2) {
-          this.width = 1;
-          this.height = 0;
-          this.x = 0;
-          this.y = 0;
-        } else {
-      this.img.src = this.srcArr[this.hits];
-      ctx.drawImage(this.img, this.x, this.y, 75, 75);
-      }
-      // this.ctx.beginPath();
-      // this.ctx.rect(this.x, this.y, this.height, this.width);
-      // this.ctx.fillStyle = "#f10d0d";
-      // this.ctx.fill();
-      // this.ctx.closePath();
-    } else {
-      ctx.drawImage(this.img, this.x - 12, this.y - 12, this.height, this.height);
-
-      // this.ctx.beginPath();
-      // this.ctx.arc(this.x, this.y, this.height, 0, Math.PI * 2);
-      // this.ctx.fillStyle = "#f10d0d";
-      // this.ctx.fill();
-      // this.ctx.closePath();
-    }
-    // requestAnimationFrame(this.draw.bind(this));
   }
 }
 
@@ -243,18 +239,22 @@ class Sling {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "level1", function() { return level1; });
 /* harmony import */ var _elements_box__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../elements/box */ "./elements/box.js");
-// let boxImg = new Image();
-// const srcArr = ['./assets/images/webpack/webpack-logo.png', './assets/images/webpack/webpack-logo-orange.png','./assets/images/webpack/webpack-logo-red.png'];
-// boxImg.src = srcArr[0];
-// const box = new Box(ctx, boxImg, boxX, boxY, 50, 50, srcArr);
-// box.hits = 0;
+/* harmony import */ var _elements_ball__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../elements/ball */ "./elements/ball.js");
 
-  let boxX = 600;
-  let boxY = 300;
 
+  //balls
+  let balls = [];
+  let ballImg = new Image();
+  ballImg.src = './assets/images/nerd.png';
+  for (var i = 0; i < 3; i++) {
+    balls.push(new _elements_ball__WEBPACK_IMPORTED_MODULE_1__["default"](ballImg, 125 + (30 * i), 388, 25));
+  }
+
+  //boxes
   let boxImg = new Image();
-  const srcArr = ['./assets/images/webpack/webpack-logo.png', './assets/images/webpack/webpack-logo-orange.png','./assets/images/webpack/webpack-logo-red.png'];
-  const level1 = [new _elements_box__WEBPACK_IMPORTED_MODULE_0__["default"](boxImg, boxX, boxY, 50, 50, srcArr)];
+  const srcArr = ['./assets/images/webpack/webpack-logo.png',
+   './assets/images/webpack/webpack-logo-orange.png','./assets/images/webpack/webpack-logo-red.png'];
+  const level1 = {boxes: [new _elements_box__WEBPACK_IMPORTED_MODULE_0__["default"](boxImg, 600, 300, 50, 50, srcArr)], balls: balls, retiredBalls: []};
 
 
 /***/ }),
@@ -274,19 +274,19 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-// let ballImg = new Image();
-// ballImg.src = './assets/images/nerd.png';
-// let ball1 = new Ball(ctx, ballImg, x, y, ballRadius);
-// let ball2 = new Ball(ctx, ballImg, x, y - 10, ballRadius);
-// let ball3 = new Ball(ctx, ballImg, x, y - 20, ballRadius);
-let boxX = 600;
-let boxY = 300;
-
+//balls
+  let balls = [];
+  let ballImg = new Image();
+  ballImg.src = './assets/images/nerd.png';
+  for (var i = 0; i < 3; i++) {
+    balls.push(new _elements_ball__WEBPACK_IMPORTED_MODULE_0__["default"](ballImg, 125 + (30 * i), 388, 25));
+  }
+//boxes
 let boxImg = new Image();
 const srcArr = ['./assets/images/heroku/heroku.png', './assets/images/heroku/heroku-orange.png', './assets/images/heroku/heroku-red.png'];
-const box1 = new _elements_box__WEBPACK_IMPORTED_MODULE_1__["default"](boxImg, boxX-50, boxY, 75, 50, srcArr);
-const box2 = new _elements_box__WEBPACK_IMPORTED_MODULE_1__["default"](boxImg, boxX+ 50, boxY, 75, 50, srcArr);
-const level2 = [box1, box2];
+const box1 = new _elements_box__WEBPACK_IMPORTED_MODULE_1__["default"](boxImg, 550, 300, 75, 50, srcArr);
+const box2 = new _elements_box__WEBPACK_IMPORTED_MODULE_1__["default"](boxImg, 650, 300, 75, 50, srcArr);
+const level2 = {boxes: [box1, box2], balls: balls, retiredBalls: []};
 
 
 /***/ }),
@@ -300,14 +300,13 @@ const level2 = [box1, box2];
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _elements_shape__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./elements/shape */ "./elements/shape.js");
-/* harmony import */ var _elements_ball__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./elements/ball */ "./elements/ball.js");
-/* harmony import */ var _elements_box__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./elements/box */ "./elements/box.js");
-/* harmony import */ var _elements_sling__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./elements/sling */ "./elements/sling.js");
-/* harmony import */ var _levels_level1__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./levels/level1 */ "./levels/level1.js");
-/* harmony import */ var _levels_level2__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./levels/level2 */ "./levels/level2.js");
-
-
+/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./util */ "./util.js");
+/* harmony import */ var _elements_sling__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./elements/sling */ "./elements/sling.js");
+/* harmony import */ var _levels_level1__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./levels/level1 */ "./levels/level1.js");
+/* harmony import */ var _levels_level2__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./levels/level2 */ "./levels/level2.js");
+// import Shape from './elements/shape';
+// import Ball from './elements/ball';
+// import Box from './elements/box';
 
 
 
@@ -318,15 +317,34 @@ document.addEventListener('DOMContentLoaded', () => {
   const ctx = canvas.getContext("2d");
   ctx.canvas.width  = 1341;
   ctx.canvas.height = 485;
-  const ballRadius = 25;
-  var x = 125;
-  var y = 333;
+
+  // const ballRadius = 25;
+  // var x = 125;
+  // var y = 333;
+  // let boxX = 600;
+  // let boxY = 300;
+  // let balls = [];
+  // for (var i = 0; i < 3; i++) {
+  //   balls.push(new Ball(ballImg, x + (30 * i), 388, ballRadius));
+  // }
+  // // let ballImg = new Image();
+  // ballImg.src = './assets/images/nerd.png';
+  // let retiredBalls = [];
+  //
+  // const explosion = new Audio();
+  // explosion.src = "./assets/audio/explosion.wav";
+
+
+
+
+  let levels = [_levels_level1__WEBPACK_IMPORTED_MODULE_2__["level1"], _levels_level2__WEBPACK_IMPORTED_MODULE_3__["level2"]];
+  let boxes = levels[0].boxes;
+  let ball = levels[0].balls[0];
+
   var dx = 2;
   var dy = -2;
   var gravity = 0.5;
   var friction = 0.99;
-  let boxX = 600;
-  let boxY = 300;
   let by;
   let bx;
   let hit = false;
@@ -336,63 +354,33 @@ document.addEventListener('DOMContentLoaded', () => {
   let released = false;
   let action = false;
   let stopped = true;
-  let angle = 4;
   let validHeight = false;
-  let levels = [_levels_level1__WEBPACK_IMPORTED_MODULE_4__["level1"], _levels_level2__WEBPACK_IMPORTED_MODULE_5__["level2"]];
-  let boxes = levels[0];
   let modal = false;
   let gameOver = false;
   let levelOver = false;
   let start = false;
 
-  let ballImg = new Image();
-  ballImg.src = './assets/images/nerd.png';
-
-  let balls = [];
-  let retiredBalls = [];
-
-  for (var i = 0; i < 3; i++) {
-    balls.push(new _elements_ball__WEBPACK_IMPORTED_MODULE_1__["default"](ballImg, x + (30 * i), 388, ballRadius));
-  }
-  let ball = balls[0];
-
 
 
   const boing = new Audio();
   boing.src = "./assets/audio/boing.wav";
+
   const launch = new Audio();
   launch.src = "./assets/audio/bomb_drop.wav";
-  const explosion = new Audio();
-  explosion.src = "./assets/audio/explosion.wav";
-
-
-
-  function mousePos(canvas, event) {
-    const a = canvas.getBoundingClientRect();
-    pos = {
-      x: event.clientX - a.left,
-      y: event.clientY - a.top
-    };
-    return pos;
-  }
-
-  function stop(audio) {
-    audio.pause();
-    audio.currentTime = 0;
-  }
 
   canvas.addEventListener('mousedown', (e) => {
     if (start && !levelOver && !gameOver) {
-    if (stopped) {
-      action = false;
-      released = false;
-      mouseHold = true;
-      validHeight = false;
-      // ball = new Ball(ctx, x, y, ballRadius);
-      stop(launch);
+      if (stopped) {
+        action = false;
+        released = false;
+        mouseHold = true;
+        validHeight = false;
+        // ball = new Ball(ctx, x, y, ballRadius);
+        Object(_util__WEBPACK_IMPORTED_MODULE_0__["stop"])(launch);
+      }
     }
-  }
   });
+
   canvas.addEventListener('mouseup', (e) => {
     if (start && !levelOver && !gameOver) {
       if (stopped) {
@@ -402,11 +390,12 @@ document.addEventListener('DOMContentLoaded', () => {
         pos = null;
         launch.play();
       }
-  }
+    }
   });
+
   canvas.addEventListener('mousemove', (e) => {
     if (start && !levelOver && !gameOver) {
-      mpos = mousePos(canvas, e);
+      mpos = Object(_util__WEBPACK_IMPORTED_MODULE_0__["mousePos"])(canvas, e);
     }
   });
 
@@ -415,7 +404,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!start) {
         start = true;
       } else if (gameOver) {
-        levels = [[1],_levels_level1__WEBPACK_IMPORTED_MODULE_4__["level1"], _levels_level2__WEBPACK_IMPORTED_MODULE_5__["level2"]];
+        levels = [[1],_levels_level1__WEBPACK_IMPORTED_MODULE_2__["level1"], _levels_level2__WEBPACK_IMPORTED_MODULE_3__["level2"]];
         handleLevels();
         gameOver = false;
       } else if (levelOver) {
@@ -424,48 +413,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   });
-    // const getDistance = (x1,y1, x2, y2) => {
-    //  let xDistance = x2 - x1;
-    //  let yDistance = y2 - y1;
-    //
-    //  return Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
-    // };
-    function gameOverModal() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.rect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = 'rgba(230, 24, 24, 0.58)';
-      ctx.fill();
-      ctx.fillStyle = '#06326f';
-      ctx.font = "30px 'Rock Salt'";
-      ctx.fillText("Game Over",canvas.width / 2 - 100, canvas.height / 2);
-      ctx.font = "20px 'Rock Salt'";
-      ctx.fillText("Hit enter to play again",canvas.width / 2 - 130, canvas.height / 2 + 75);
-    }
 
-    function levelsModal() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.rect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = 'rgba(24, 230, 150, 0.58)';
-      ctx.fill();
-      ctx.fillStyle = '#06326f';
-      ctx.font = "30px 'Rock Salt'";
-      ctx.fillText("Congratulations",canvas.width / 2 - 130, canvas.height / 2);
-      ctx.font = "20px 'Rock Salt'";
-      ctx.fillText("Hit enter to continue",canvas.width / 2 - 130, canvas.height / 2 + 75);
-    }
-
-    function startModal() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.rect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = 'rgba(24, 200, 255, 0.58)';
-      ctx.fill();
-      ctx.fillStyle = '#06326f';
-      ctx.font = "30px 'Rock Salt'";
-      ctx.fillText("Angry Nerds",canvas.width / 2 - 100, canvas.height / 2 - 100);
-      ctx.font = "20px 'Rock Salt'";
-      ctx.fillText("Use the mouse to drag and unleash the nerds!",400, canvas.height / 2 + 75);
-      ctx.fillText("Hit enter to play",canvas.width / 2 - 130, canvas.height / 2 + 120);
-    }
 
     function isLevelOver(){
       for (var i = 0; i < boxes.length; i++) {
@@ -478,26 +426,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleLevels() {
       levels.shift();
-      boxes = levels[0];
-       balls = [];
-       retiredBalls = [];
-      for (var i = 0; i < 3; i++) {
-        balls.push(new _elements_ball__WEBPACK_IMPORTED_MODULE_1__["default"](ballImg, x + (30 * i), y, ballRadius));
-      }
-      let ball = balls[0];
+      boxes = levels.boxes[0];
+      balls = [];
+      retiredBalls = [];
+      // for (var i = 0; i < 3; i++) {
+      //   balls.push(new Ball(ballImg, x + (30 * i), y, ballRadius));
+      // }
+      ball = levels[0].balls[0];
     }
 
 
   function drawBox(box) {
     const height = 75;
     // const length = 75;
-    if (ball.x + ballRadius > box.x && ball.x - ballRadius < box.x + box.width && ball.y + ballRadius > box.y ) {
+    if (ball.x + ball.width > box.x && ball.x - ball.width < box.x + box.width && ball.y + ball.width > box.y ) {
       hit = true;
-      box.hits += 1;
+      box.hit();
       console.log(box.hits);
+      Object(_util__WEBPACK_IMPORTED_MODULE_0__["stop"])(launch);
 
-      explosion.play();
-      stop(launch);
       if (ball.y < box.y || ball.y > box.y + box.height) { // top hit
         ball.y -= 10;
         dy = -(Math.abs(dy));
@@ -526,7 +473,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function drawString() {
-    const sling = new _elements_sling__WEBPACK_IMPORTED_MODULE_3__["default"](ctx, mouseHold, ball.x, ball.y);
+    const sling = new _elements_sling__WEBPACK_IMPORTED_MODULE_1__["default"](ctx, mouseHold, ball.x, ball.y);
   }
 
 
@@ -538,10 +485,10 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.lineWidth = 10;
     ctx.stroke();
 
-    if (ball.x + ballRadius > 400 && ball.x - ballRadius < 410) {
-      if (ball.y + ballRadius > 280) {
+    if (ball.x + ball.width > 400 && ball.x - ball.width < 410) {
+      if (ball.y + ball.width > 280) {
         dx = -(dx);
-      } else if (ball.y + ballRadius < 280 && ball.y + ballRadius > 260){
+      } else if (ball.y + ball.width < 280 && ball.y + ball.width > 260){
       dy = -(Math.abs(dy));
       }
     }
@@ -554,88 +501,170 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  const sun = new Image();
-  sun.src = './assets/images/coffee-sun.png';
+    function getStatus() {
+      if (!start) {
+        return Object(_util__WEBPACK_IMPORTED_MODULE_0__["startModal"])(ctx, canvas);
+      } else if (gameOver) {
+        return  Object(_util__WEBPACK_IMPORTED_MODULE_0__["gameOverModal"])(ctx, canvas);
+      } else if (levelOver) {
+        return Object(_util__WEBPACK_IMPORTED_MODULE_0__["levelsModal"])(ctx, canvas);
+      }
+    }
+
+
 
   function draw() {
-    if (!start) {
-      startModal();
-    } else if (gameOver) {
-      gameOverModal();
-    } else if (levelOver) {
-      levelsModal();
-    } else {
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      ctx.drawImage(sun, 1000, 20, 110, 110);
-      if (isLevelOver()) {
-        levelOver = true;
-      }
-
-      for (var i = 0; i < boxes.length; i++) {
-        drawBox(boxes[i]);
-        boxes[i].draw(ctx);
-      }
-      //
-      // for (var j = 0; j < retiredBalls.length; j++) {
-      //   retiredBalls[j].draw(ctx);
-      // }
-
-      for (let i = 0; i < balls.length; i++) {
-
-        balls[i].draw(ctx);
-      }
-      drawFence();
-      drawString();
-
-      if (action && ball.y < canvas.height - ball.height - 28){
-        validHeight = true;
-      }
-      if (mouseHold && mpos.y < canvas.height - ball.height && stopped) {
-        ball.x = Math.min(mpos.x, 400);
-        ball.y = mpos.y;
-      } else if (released) {
-        stopped = false;
-        released = false;
-        const pullY = y - mpos.y;
-        const pullX = x - Math.min(mpos.x, 400);
-
-        dy = pullY / 5;
-        dx = pullX / 5;
-      }
-      if (action) {
-        dx *= friction;
-        if ((dy + ball.y > canvas.height - ball.height- 28  && validHeight )|| dy + ball.y < ball.height ) { //hit top / bottom
-          dy = -dy * 0.9 ;
-          stop(launch);
-        } else {
-          dy += gravity;
-        }
-        if (dx + ball.x > canvas.width - ball.height || dx + ball.x < ball.height) {
-          boing.play();
-          dx = -dx;
-        }
-        ball.y += dy;
-        ball.x += dx;
-        if (Math.abs(dy) < 0.05 && ball.y > canvas.height - 150 ) {
-          stopped = true;
-          if (balls.length > 1) {
-            retiredBalls.push(balls.shift());
-          } else {
-            gameOver = true;
-          }
-          ball = balls[0];
-        }
-      }
-        ball.draw(ctx);
+    if (isLevelOver()) {
+      levelOver = true;
     }
+    getStatus();
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    Object(_util__WEBPACK_IMPORTED_MODULE_0__["drawSun"])(ctx);
+
+
+    for (var i = 0; i < boxes.length; i++) {
+      drawBox(boxes[i]);
+      boxes[i].draw(ctx);
+    }
+
+    for (let i = 0; i < levels[0].balls.length; i++) {
+      levels[0].balls[i].draw(ctx);
+    }
+    drawFence();
+    drawString();
+
+    if (action && ball.y < canvas.height - ball.height - 28){
+      validHeight = true;
+    }
+    if (mouseHold && mpos.y < canvas.height - ball.height && stopped) {
+      ball.x = Math.min(mpos.x, 400);
+      ball.y = mpos.y;
+    } else if (released) {
+      stopped = false;
+      released = false;
+      const pullY = y - mpos.y;
+      const pullX = x - Math.min(mpos.x, 400);
+
+      dy = pullY / 5;
+      dx = pullX / 5;
+    }
+    if (action) {
+      dx *= friction;
+      if ((dy + ball.y > canvas.height - ball.height- 28  && validHeight )|| dy + ball.y < ball.height ) { //hit top / bottom
+        dy = -dy * 0.9 ;
+        Object(_util__WEBPACK_IMPORTED_MODULE_0__["stop"])(launch);
+      } else {
+        dy += gravity;
+      }
+      if (dx + ball.x > canvas.width - ball.height || dx + ball.x < ball.height) {
+        boing.play();
+        dx = -dx;
+      }
+      ball.y += dy;
+      ball.x += dx;
+      if (Math.abs(dy) < 0.05 && ball.y > canvas.height - 150 ) {
+        stopped = true;
+        if (balls.length > 1) {
+          retiredBalls.push(balls.shift());
+        } else {
+          gameOver = true;
+        }
+        ball = balls[0];
+      }
+    }
+    ball.draw(ctx);
     requestAnimationFrame(draw);
   }
 
   draw();
 
 });
+
+
+/***/ }),
+
+/***/ "./util.js":
+/*!*****************!*\
+  !*** ./util.js ***!
+  \*****************/
+/*! exports provided: gameOverModal, levelsModal, startModal, mousePos, stop, getDistance, drawSun */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "gameOverModal", function() { return gameOverModal; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "levelsModal", function() { return levelsModal; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "startModal", function() { return startModal; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mousePos", function() { return mousePos; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "stop", function() { return stop; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getDistance", function() { return getDistance; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "drawSun", function() { return drawSun; });
+const gameOverModal = (ctx, canvas) => {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.rect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = 'rgba(230, 24, 24, 0.58)';
+  ctx.fill();
+  ctx.fillStyle = '#06326f';
+  ctx.font = "30px 'Rock Salt'";
+  ctx.fillText("Game Over",canvas.width / 2 - 100, canvas.height / 2);
+  ctx.font = "20px 'Rock Salt'";
+  ctx.fillText("Hit enter to play again",canvas.width / 2 - 130, canvas.height / 2 + 75);
+};
+
+const levelsModal = (ctx, canvas) => {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.rect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = 'rgba(24, 230, 150, 0.58)';
+  ctx.fill();
+  ctx.fillStyle = '#06326f';
+  ctx.font = "30px 'Rock Salt'";
+  ctx.fillText("Congratulations",canvas.width / 2 - 130, canvas.height / 2);
+  ctx.font = "20px 'Rock Salt'";
+  ctx.fillText("Hit enter to continue",canvas.width / 2 - 130, canvas.height / 2 + 75);
+};
+
+const startModal = (ctx, canvas) => {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.rect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = 'rgba(24, 200, 255, 0.58)';
+  ctx.fill();
+  ctx.fillStyle = '#06326f';
+  ctx.font = "30px 'Rock Salt'";
+  ctx.fillText("Angry Nerds",canvas.width / 2 - 100, canvas.height / 2 - 100);
+  ctx.font = "20px 'Rock Salt'";
+  ctx.fillText("Use the mouse to drag and unleash the nerds!",400, canvas.height / 2 + 75);
+  ctx.fillText("Hit enter to play",canvas.width / 2 - 130, canvas.height / 2 + 120);
+};
+
+
+const mousePos = (canvas, event) => {
+  const a = canvas.getBoundingClientRect();
+  pos = {
+    x: event.clientX - a.left,
+    y: event.clientY - a.top
+  };
+  return pos;
+};
+
+
+const stop = (audio) => {
+  audio.pause();
+  audio.currentTime = 0;
+};
+
+const getDistance = (x1, y1, x2, y2) => {
+ let xDistance = x2 - x1;
+ let yDistance = y2 - y1;
+
+ return Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
+};
+
+const drawSun = (ctx) => {
+  const sun = new Image();
+  sun.src = './assets/images/coffee-sun.png';
+  ctx.drawImage(sun, 1000, 20, 110, 110);
+};
 
 
 /***/ })

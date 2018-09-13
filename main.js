@@ -1,6 +1,8 @@
-import Shape from './elements/shape';
-import Ball from './elements/ball';
-import Box from './elements/box';
+// import Shape from './elements/shape';
+// import Ball from './elements/ball';
+// import Box from './elements/box';
+import { gameOverModal, levelsModal, startModal,
+  mousePos, stop, getDistance, drawSun } from './util';
 import Sling from './elements/sling';
 import { level1 } from './levels/level1';
 import { level2 } from './levels/level2';
@@ -10,15 +12,34 @@ document.addEventListener('DOMContentLoaded', () => {
   const ctx = canvas.getContext("2d");
   ctx.canvas.width  = 1341;
   ctx.canvas.height = 485;
-  const ballRadius = 25;
-  var x = 125;
-  var y = 333;
+
+  // const ballRadius = 25;
+  // var x = 125;
+  // var y = 333;
+  // let boxX = 600;
+  // let boxY = 300;
+  // let balls = [];
+  // for (var i = 0; i < 3; i++) {
+  //   balls.push(new Ball(ballImg, x + (30 * i), 388, ballRadius));
+  // }
+  // // let ballImg = new Image();
+  // ballImg.src = './assets/images/nerd.png';
+  // let retiredBalls = [];
+  //
+  // const explosion = new Audio();
+  // explosion.src = "./assets/audio/explosion.wav";
+
+
+
+
+  let levels = [level1, level2];
+  let boxes = levels[0].boxes;
+  let ball = levels[0].balls[0];
+
   var dx = 2;
   var dy = -2;
   var gravity = 0.5;
   var friction = 0.99;
-  let boxX = 600;
-  let boxY = 300;
   let by;
   let bx;
   let hit = false;
@@ -28,63 +49,33 @@ document.addEventListener('DOMContentLoaded', () => {
   let released = false;
   let action = false;
   let stopped = true;
-  let angle = 4;
   let validHeight = false;
-  let levels = [level1, level2];
-  let boxes = levels[0];
   let modal = false;
   let gameOver = false;
   let levelOver = false;
   let start = false;
 
-  let ballImg = new Image();
-  ballImg.src = './assets/images/nerd.png';
-
-  let balls = [];
-  let retiredBalls = [];
-
-  for (var i = 0; i < 3; i++) {
-    balls.push(new Ball(ballImg, x + (30 * i), 388, ballRadius));
-  }
-  let ball = balls[0];
-
 
 
   const boing = new Audio();
   boing.src = "./assets/audio/boing.wav";
+
   const launch = new Audio();
   launch.src = "./assets/audio/bomb_drop.wav";
-  const explosion = new Audio();
-  explosion.src = "./assets/audio/explosion.wav";
-
-
-
-  function mousePos(canvas, event) {
-    const a = canvas.getBoundingClientRect();
-    pos = {
-      x: event.clientX - a.left,
-      y: event.clientY - a.top
-    };
-    return pos;
-  }
-
-  function stop(audio) {
-    audio.pause();
-    audio.currentTime = 0;
-  }
 
   canvas.addEventListener('mousedown', (e) => {
     if (start && !levelOver && !gameOver) {
-    if (stopped) {
-      action = false;
-      released = false;
-      mouseHold = true;
-      validHeight = false;
-      // ball = new Ball(ctx, x, y, ballRadius);
-      stop(launch);
+      if (stopped) {
+        action = false;
+        released = false;
+        mouseHold = true;
+        validHeight = false;
+        // ball = new Ball(ctx, x, y, ballRadius);
+        stop(launch);
+      }
     }
-  }
   });
+
   canvas.addEventListener('mouseup', (e) => {
     if (start && !levelOver && !gameOver) {
       if (stopped) {
@@ -94,8 +85,9 @@ document.addEventListener('DOMContentLoaded', () => {
         pos = null;
         launch.play();
       }
-  }
+    }
   });
+
   canvas.addEventListener('mousemove', (e) => {
     if (start && !levelOver && !gameOver) {
       mpos = mousePos(canvas, e);
@@ -116,48 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   });
-    // const getDistance = (x1,y1, x2, y2) => {
-    //  let xDistance = x2 - x1;
-    //  let yDistance = y2 - y1;
-    //
-    //  return Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
-    // };
-    function gameOverModal() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.rect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = 'rgba(230, 24, 24, 0.58)';
-      ctx.fill();
-      ctx.fillStyle = '#06326f';
-      ctx.font = "30px 'Rock Salt'";
-      ctx.fillText("Game Over",canvas.width / 2 - 100, canvas.height / 2);
-      ctx.font = "20px 'Rock Salt'";
-      ctx.fillText("Hit enter to play again",canvas.width / 2 - 130, canvas.height / 2 + 75);
-    }
 
-    function levelsModal() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.rect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = 'rgba(24, 230, 150, 0.58)';
-      ctx.fill();
-      ctx.fillStyle = '#06326f';
-      ctx.font = "30px 'Rock Salt'";
-      ctx.fillText("Congratulations",canvas.width / 2 - 130, canvas.height / 2);
-      ctx.font = "20px 'Rock Salt'";
-      ctx.fillText("Hit enter to continue",canvas.width / 2 - 130, canvas.height / 2 + 75);
-    }
-
-    function startModal() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.rect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = 'rgba(24, 200, 255, 0.58)';
-      ctx.fill();
-      ctx.fillStyle = '#06326f';
-      ctx.font = "30px 'Rock Salt'";
-      ctx.fillText("Angry Nerds",canvas.width / 2 - 100, canvas.height / 2 - 100);
-      ctx.font = "20px 'Rock Salt'";
-      ctx.fillText("Use the mouse to drag and unleash the nerds!",400, canvas.height / 2 + 75);
-      ctx.fillText("Hit enter to play",canvas.width / 2 - 130, canvas.height / 2 + 120);
-    }
 
     function isLevelOver(){
       for (var i = 0; i < boxes.length; i++) {
@@ -170,26 +121,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleLevels() {
       levels.shift();
-      boxes = levels[0];
-       balls = [];
-       retiredBalls = [];
-      for (var i = 0; i < 3; i++) {
-        balls.push(new Ball(ballImg, x + (30 * i), y, ballRadius));
-      }
-      let ball = balls[0];
+      boxes = levels.boxes[0];
+      balls = [];
+      retiredBalls = [];
+      // for (var i = 0; i < 3; i++) {
+      //   balls.push(new Ball(ballImg, x + (30 * i), y, ballRadius));
+      // }
+      ball = levels[0].balls[0];
     }
 
 
   function drawBox(box) {
     const height = 75;
     // const length = 75;
-    if (ball.x + ballRadius > box.x && ball.x - ballRadius < box.x + box.width && ball.y + ballRadius > box.y ) {
+    if (ball.x + ball.width > box.x && ball.x - ball.width < box.x + box.width && ball.y + ball.width > box.y ) {
       hit = true;
-      box.hits += 1;
+      box.hit();
       console.log(box.hits);
-
-      explosion.play();
       stop(launch);
+
       if (ball.y < box.y || ball.y > box.y + box.height) { // top hit
         ball.y -= 10;
         dy = -(Math.abs(dy));
@@ -230,10 +180,10 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.lineWidth = 10;
     ctx.stroke();
 
-    if (ball.x + ballRadius > 400 && ball.x - ballRadius < 410) {
-      if (ball.y + ballRadius > 280) {
+    if (ball.x + ball.width > 400 && ball.x - ball.width < 410) {
+      if (ball.y + ball.width > 280) {
         dx = -(dx);
-      } else if (ball.y + ballRadius < 280 && ball.y + ballRadius > 260){
+      } else if (ball.y + ball.width < 280 && ball.y + ball.width > 260){
       dy = -(Math.abs(dy));
       }
     }
@@ -246,82 +196,79 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  const sun = new Image();
-  sun.src = './assets/images/coffee-sun.png';
+    function getStatus() {
+      if (!start) {
+        return startModal(ctx, canvas);
+      } else if (gameOver) {
+        return  gameOverModal(ctx, canvas);
+      } else if (levelOver) {
+        return levelsModal(ctx, canvas);
+      }
+    }
+
+
 
   function draw() {
-    if (!start) {
-      startModal();
-    } else if (gameOver) {
-      gameOverModal();
-    } else if (levelOver) {
-      levelsModal();
-    } else {
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      ctx.drawImage(sun, 1000, 20, 110, 110);
-      if (isLevelOver()) {
-        levelOver = true;
-      }
-
-      for (var i = 0; i < boxes.length; i++) {
-        drawBox(boxes[i]);
-        boxes[i].draw(ctx);
-      }
-      //
-      // for (var j = 0; j < retiredBalls.length; j++) {
-      //   retiredBalls[j].draw(ctx);
-      // }
-
-      for (let i = 0; i < balls.length; i++) {
-
-        balls[i].draw(ctx);
-      }
-      drawFence();
-      drawString();
-
-      if (action && ball.y < canvas.height - ball.height - 28){
-        validHeight = true;
-      }
-      if (mouseHold && mpos.y < canvas.height - ball.height && stopped) {
-        ball.x = Math.min(mpos.x, 400);
-        ball.y = mpos.y;
-      } else if (released) {
-        stopped = false;
-        released = false;
-        const pullY = y - mpos.y;
-        const pullX = x - Math.min(mpos.x, 400);
-
-        dy = pullY / 5;
-        dx = pullX / 5;
-      }
-      if (action) {
-        dx *= friction;
-        if ((dy + ball.y > canvas.height - ball.height- 28  && validHeight )|| dy + ball.y < ball.height ) { //hit top / bottom
-          dy = -dy * 0.9 ;
-          stop(launch);
-        } else {
-          dy += gravity;
-        }
-        if (dx + ball.x > canvas.width - ball.height || dx + ball.x < ball.height) {
-          boing.play();
-          dx = -dx;
-        }
-        ball.y += dy;
-        ball.x += dx;
-        if (Math.abs(dy) < 0.05 && ball.y > canvas.height - 150 ) {
-          stopped = true;
-          if (balls.length > 1) {
-            retiredBalls.push(balls.shift());
-          } else {
-            gameOver = true;
-          }
-          ball = balls[0];
-        }
-      }
-        ball.draw(ctx);
+    if (isLevelOver()) {
+      levelOver = true;
     }
+    getStatus();
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawSun(ctx);
+
+
+    for (var i = 0; i < boxes.length; i++) {
+      drawBox(boxes[i]);
+      boxes[i].draw(ctx);
+    }
+
+    for (let i = 0; i < levels[0].balls.length; i++) {
+      levels[0].balls[i].draw(ctx);
+    }
+    drawFence();
+    drawString();
+
+    if (action && ball.y < canvas.height - ball.height - 28){
+      validHeight = true;
+    }
+    if (mouseHold && mpos.y < canvas.height - ball.height && stopped) {
+      ball.x = Math.min(mpos.x, 400);
+      ball.y = mpos.y;
+    } else if (released) {
+      stopped = false;
+      released = false;
+      const pullY = y - mpos.y;
+      const pullX = x - Math.min(mpos.x, 400);
+
+      dy = pullY / 5;
+      dx = pullX / 5;
+    }
+    if (action) {
+      dx *= friction;
+      if ((dy + ball.y > canvas.height - ball.height- 28  && validHeight )|| dy + ball.y < ball.height ) { //hit top / bottom
+        dy = -dy * 0.9 ;
+        stop(launch);
+      } else {
+        dy += gravity;
+      }
+      if (dx + ball.x > canvas.width - ball.height || dx + ball.x < ball.height) {
+        boing.play();
+        dx = -dx;
+      }
+      ball.y += dy;
+      ball.x += dx;
+      if (Math.abs(dy) < 0.05 && ball.y > canvas.height - 150 ) {
+        stopped = true;
+        if (balls.length > 1) {
+          retiredBalls.push(balls.shift());
+        } else {
+          gameOver = true;
+        }
+        ball = balls[0];
+      }
+    }
+    ball.draw(ctx);
     requestAnimationFrame(draw);
   }
 
