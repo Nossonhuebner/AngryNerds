@@ -2,17 +2,17 @@
 // import Ball from './elements/ball';
 // import Box from './elements/box';
 import { gameOverModal, levelsModal, startModal, wallDetection,
-  mousePos, stop, getDistance, drawSun, collisionDetection } from './util';
+        mousePos, stop, getDistance, drawSun, collisionDetection } from './util';
 import Sling from './elements/sling';
 import { level1 } from './levels/level1';
 import { level2 } from './levels/level2';
 
 document.addEventListener('DOMContentLoaded', () => {
-  var canvas = document.getElementById("myCanvas");
+  const canvas = document.getElementById("myCanvas");
   const ctx = canvas.getContext("2d");
   ctx.canvas.width  = 1341;
   ctx.canvas.height = 485;
-  const x = 125;
+  const x = 125; // middle of sling
   const y = 333;
   let levels = [level1, level2];
   let boxes = levels[0].boxes;
@@ -39,12 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-  const boing = new Audio();
-  boing.src = "./assets/audio/boing.wav";
-
-  const launch = new Audio();
-  launch.src = "./assets/audio/bomb_drop.wav";
-
   canvas.addEventListener('mousedown', (e) => {
     // if (start && !levelOver && !gameOver) {
     //   if (stopped) {
@@ -52,7 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
         released = false;
         mouseHold = true;
         validHeight = false;
-        stop(launch);
     //   }
     // }
   });
@@ -64,7 +57,6 @@ document.addEventListener('DOMContentLoaded', () => {
         mouseHold = false;
         released = true;
         pos = null;
-        launch.play();
     //   }
     // }
   });
@@ -111,32 +103,25 @@ document.addEventListener('DOMContentLoaded', () => {
       hit = true;
       box.hit();
       console.log(box.hits);
-      stop(launch);
 
       if (ball.y < box.y || ball.y > box.y + box.height) { // top hit
         ball.y -= 10;
-        dy = -(Math.abs(dy));
+        box.dy = -(Math.abs(box.dy));
       } else {
         ball.x = ball.x < box.x ? ball.x -10 : ball.x + 10;
-        dx = -(dx);
+        box.dx = -(box.dx);
       }
-      box.bx = -dx;
-      box.by = -dy;
+      box.dx = -box.dx;
+      box.dy = -box.dy;
     }
 
-    // if (box.x + box.bx > canvas.width - box.width || box.x + box.bx < 0) {
-    //   box.bx = -box.bx;
-    // } else if (box.by + box.y > canvas.height - height - 28 || box.by + box.y < 0) {
-    //   box.by = -(Math.abs(box.by * 0.8));
-    // }
-
     if (hit) {
-      if (box.y + box.by + (2 * gravity) + box.height < canvas.height - 38) {
-        box.by += (2 * gravity);
+      if (box.y + box.dy + (2 * gravity) + box.height < canvas.height - 38) {
+        box.dy += (2 * gravity);
       }
-      box.bx *= friction;
-      box.x += box.bx;
-      box.y = Math.min((canvas.height - height - 28), (box.y + box.by));
+      box.dx *= friction;
+      box.x += box.dx;
+      box.y = Math.min((canvas.height - box.height - 28), (box.y + box.dy));
     }
   }
 
@@ -156,25 +141,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (ball.x + ball.width > 400 && ball.x - ball.width < 410) {
       if (ball.y + ball.width > 280) {
-        dx = -(dx);
+        ball.dx = -(ball.dx);
       } else if (ball.y + ball.width < 280 && ball.y + ball.width > 260){
-      dy = -(Math.abs(dy));
+      ball.dy = -(Math.abs(ball.dy));
       }
     }
 
     for (var i = 0; i < boxes.length; i++) {
       if (boxes[i].x + boxes[i].width > 400 && boxes[i].x < 410 && boxes[i].y + boxes[i].height > 280) {
-        boxes[i].bx = -boxes[i].bx;
-        boxes[i].x += boxes[i].bx;
+        boxes[i].dx = -boxes[i].dx;
+        boxes[i].x += boxes[i].dx;
       }
     }
   }
 
 
   function draw() {
-    // if (isLevelOver()) {
-    //   levelOver = true;
-    // }
     if (!start) {
        startModal(ctx, canvas);
     } else if (gameOver) {
@@ -216,7 +198,6 @@ document.addEventListener('DOMContentLoaded', () => {
       ball.dx *= friction;
       if ((ball.dy + ball.y > canvas.height - ball.height- 28  && validHeight )|| ball.dy + ball.y < ball.height ) { //hit top / bottom
         ball.dy = -ball.dy * 0.9 ;
-        stop(launch);
       } else {
         ball.dy += gravity;
       }
@@ -236,6 +217,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
     ball.draw(ctx);
+    // if (released) {
+    //   released = false;
+    //   levels[0].retiredBalls.push(levels[0].balls.shift());
+    //   ball = levels[0].balls[0];// next ball
+    // }
   }
     requestAnimationFrame(draw);
   }

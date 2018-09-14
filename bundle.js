@@ -137,14 +137,21 @@ class Box extends _shape__WEBPACK_IMPORTED_MODULE_0__["default"] {
 
   draw(ctx) {
     if (this.hits > 2) { //reduce visibilty if dead
-      this.width = 1;
-      this.height = 0;
-      this.x = 0;
-      this.y = 0;
-    } else {
-      this.img.src = this.srcArr[this.hits];
-      ctx.drawImage(this.img, this.x, this.y, 75, 75);
+      // this.width = 1;
+      // this.height = 0;
+      // this.x = 0;
+      // this.y = 0;
+      return;
+    } else if (this.hits) {
+        // if (this.y + this.by + (2 * gravity) + this.height < canvas.height - 38) { //off the ground
+        this.dy += (2 * 0.5); // gravity
+        // }
+        this.dx *= 0.99; // friction
+        this.x += this.dx;
+        this.y = Math.min((ctx.canvas.height - this.height - 28), (this.y + this.dy));
     }
+    this.img.src = this.srcArr[this.hits];
+    ctx.drawImage(this.img, this.x, this.y, 75, 75);
   }
 
   hit() {
@@ -179,7 +186,7 @@ class Shape {
     this.srcArr = srcArr;
     this.hits = 0;
     this.dx = 0;
-    this.by = 0;
+    this.dy = 0;
   }
 }
 
@@ -203,35 +210,43 @@ class Sling {
     this.ctx = ctx;
     this.x = x;
     this.y = y;
+    this.launch = new Audio();
+    this.launch.src = "./assets/audio/bomb_drop.wav";
   }
 
   draw(mouseHold, x, y) {
     this.x = x;
     this.y = y;
-    if (mouseHold) {
-    this.ctx.strokeStyle = 'black';
-    this.ctx.beginPath();
-    this.ctx.moveTo(100, 316);
-    this.ctx.lineTo(Math.min(x, 400), y);
-    this.ctx.lineWidth = 1;
-    this.ctx.stroke();
+    if (mouseHold) { // lines to and from mousePos
+      this.mouseHold = true;
+      this.ctx.strokeStyle = 'black';
+      this.ctx.beginPath();
+      this.ctx.moveTo(100, 316);
+      this.ctx.lineTo(Math.min(x, 400), y);
+      this.ctx.lineWidth = 1;
+      this.ctx.stroke();
 
-    this.ctx.strokeStyle = 'black';
-    this.ctx.beginPath();
-    this.ctx.moveTo(Math.min(x, 400), y);
-    this.ctx.lineTo(150, 350);
-    this.ctx.lineWidth = 1;
-    this.ctx.stroke();
-  } else {
-    this.ctx.strokeStyle = 'black';
-    this.ctx.beginPath();
-    this.ctx.moveTo(100, 316);
-    this.ctx.lineTo(150, 350);
-    this.ctx.lineWidth = 1;
-    this.ctx.stroke();
-  }
-  }
+      this.ctx.strokeStyle = 'black';
+      this.ctx.beginPath();
+      this.ctx.moveTo(Math.min(x, 400), y);
+      this.ctx.lineTo(150, 350);
+      this.ctx.lineWidth = 1;
+      this.ctx.stroke();
+    } else {
 
+      if (this.mouseHold) { // just released
+        this.launch.play();
+        this.mouseHold = false;
+      }
+
+      this.ctx.strokeStyle = 'black';
+      this.ctx.beginPath();
+      this.ctx.moveTo(100, 316);
+      this.ctx.lineTo(150, 350);
+      this.ctx.lineWidth = 1;
+      this.ctx.stroke();
+    }
+  }
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (Sling);
@@ -324,11 +339,11 @@ __webpack_require__.r(__webpack_exports__);
 
 
 document.addEventListener('DOMContentLoaded', () => {
-  var canvas = document.getElementById("myCanvas");
+  const canvas = document.getElementById("myCanvas");
   const ctx = canvas.getContext("2d");
   ctx.canvas.width  = 1341;
   ctx.canvas.height = 485;
-  const x = 125;
+  const x = 125; // middle of sling
   const y = 333;
   let levels = [_levels_level1__WEBPACK_IMPORTED_MODULE_2__["level1"], _levels_level2__WEBPACK_IMPORTED_MODULE_3__["level2"]];
   let boxes = levels[0].boxes;
@@ -355,12 +370,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-  const boing = new Audio();
-  boing.src = "./assets/audio/boing.wav";
-
-  const launch = new Audio();
-  launch.src = "./assets/audio/bomb_drop.wav";
-
   canvas.addEventListener('mousedown', (e) => {
     // if (start && !levelOver && !gameOver) {
     //   if (stopped) {
@@ -368,7 +377,6 @@ document.addEventListener('DOMContentLoaded', () => {
         released = false;
         mouseHold = true;
         validHeight = false;
-        Object(_util__WEBPACK_IMPORTED_MODULE_0__["stop"])(launch);
     //   }
     // }
   });
@@ -380,7 +388,6 @@ document.addEventListener('DOMContentLoaded', () => {
         mouseHold = false;
         released = true;
         pos = null;
-        launch.play();
     //   }
     // }
   });
@@ -427,32 +434,25 @@ document.addEventListener('DOMContentLoaded', () => {
       hit = true;
       box.hit();
       console.log(box.hits);
-      Object(_util__WEBPACK_IMPORTED_MODULE_0__["stop"])(launch);
 
       if (ball.y < box.y || ball.y > box.y + box.height) { // top hit
         ball.y -= 10;
-        dy = -(Math.abs(dy));
+        box.dy = -(Math.abs(box.dy));
       } else {
         ball.x = ball.x < box.x ? ball.x -10 : ball.x + 10;
-        dx = -(dx);
+        box.dx = -(box.dx);
       }
-      box.bx = -dx;
-      box.by = -dy;
+      box.dx = -box.dx;
+      box.dy = -box.dy;
     }
 
-    // if (box.x + box.bx > canvas.width - box.width || box.x + box.bx < 0) {
-    //   box.bx = -box.bx;
-    // } else if (box.by + box.y > canvas.height - height - 28 || box.by + box.y < 0) {
-    //   box.by = -(Math.abs(box.by * 0.8));
-    // }
-
     if (hit) {
-      if (box.y + box.by + (2 * gravity) + box.height < canvas.height - 38) {
-        box.by += (2 * gravity);
+      if (box.y + box.dy + (2 * gravity) + box.height < canvas.height - 38) {
+        box.dy += (2 * gravity);
       }
-      box.bx *= friction;
-      box.x += box.bx;
-      box.y = Math.min((canvas.height - height - 28), (box.y + box.by));
+      box.dx *= friction;
+      box.x += box.dx;
+      box.y = Math.min((canvas.height - box.height - 28), (box.y + box.dy));
     }
   }
 
@@ -472,25 +472,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (ball.x + ball.width > 400 && ball.x - ball.width < 410) {
       if (ball.y + ball.width > 280) {
-        dx = -(dx);
+        ball.dx = -(ball.dx);
       } else if (ball.y + ball.width < 280 && ball.y + ball.width > 260){
-      dy = -(Math.abs(dy));
+      ball.dy = -(Math.abs(ball.dy));
       }
     }
 
     for (var i = 0; i < boxes.length; i++) {
       if (boxes[i].x + boxes[i].width > 400 && boxes[i].x < 410 && boxes[i].y + boxes[i].height > 280) {
-        boxes[i].bx = -boxes[i].bx;
-        boxes[i].x += boxes[i].bx;
+        boxes[i].dx = -boxes[i].dx;
+        boxes[i].x += boxes[i].dx;
       }
     }
   }
 
 
   function draw() {
-    // if (isLevelOver()) {
-    //   levelOver = true;
-    // }
     if (!start) {
        Object(_util__WEBPACK_IMPORTED_MODULE_0__["startModal"])(ctx, canvas);
     } else if (gameOver) {
@@ -532,7 +529,6 @@ document.addEventListener('DOMContentLoaded', () => {
       ball.dx *= friction;
       if ((ball.dy + ball.y > canvas.height - ball.height- 28  && validHeight )|| ball.dy + ball.y < ball.height ) { //hit top / bottom
         ball.dy = -ball.dy * 0.9 ;
-        Object(_util__WEBPACK_IMPORTED_MODULE_0__["stop"])(launch);
       } else {
         ball.dy += gravity;
       }
@@ -552,6 +548,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
     ball.draw(ctx);
+    // if (released) {
+    //   released = false;
+    //   levels[0].retiredBalls.push(levels[0].balls.shift());
+    //   ball = levels[0].balls[0];// next ball
+    // }
   }
     requestAnimationFrame(draw);
   }
@@ -580,6 +581,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "collisionDetection", function() { return collisionDetection; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "wallDetection", function() { return wallDetection; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "drawSun", function() { return drawSun; });
+const boing = new Audio();
+boing.src = "./assets/audio/boing.wav";
+
 const gameOverModal = (ctx, canvas) => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.rect(0, 0, canvas.width, canvas.height);
@@ -640,18 +644,20 @@ const getDistance = (x1, y1, x2, y2) => {
 };
 
 const collisionDetection = (ball, box) => {
-  if (getDistance((ball.x + ball.height), (ball.y + ball.height), box.x, box.y) < 15||
-      getDistance(ball.x, (ball.y + ball.height), (box.x + box.width), box.y) < 15 )  {
+  if (getDistance((ball.x + ball.height), (ball.y + ball.height), box.x, box.y) < 30||
+      getDistance(ball.x, (ball.y + ball.height), (box.x + box.width), box.y) < 30 )  {
+      box.hit();
       ball.dx = -(ball.dx);
       ball.dy = -(ball.dy);
-      box.dx = -(box.dx);
-      box.dy = -(box.dy);
+      box.dx = -(ball.dx);
+      box.dy = -(ball.dy);
   }
 };
 
 const wallDetection = (object, canvas) => {
   if (object.x + object.dx > canvas.width - object.width || object.x + object.dx < 0) {
     object.dx = -object.dx;
+    boing.play();
   } else if (object.dy + object.y > canvas.height - object.height - 28 || object.dy + object.y < 0) {
     object.dy = -(Math.abs(object.dy * 0.8));
   }

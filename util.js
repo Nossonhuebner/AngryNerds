@@ -1,3 +1,6 @@
+const boing = new Audio();
+boing.src = "./assets/audio/boing.wav";
+
 export const gameOverModal = (ctx, canvas) => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.rect(0, 0, canvas.width, canvas.height);
@@ -58,18 +61,20 @@ export const getDistance = (x1, y1, x2, y2) => {
 };
 
 export const collisionDetection = (ball, box) => {
-  if (getDistance((ball.x + ball.height), (ball.y + ball.height), box.x, box.y) < 15||
-      getDistance(ball.x, (ball.y + ball.height), (box.x + box.width), box.y) < 15 )  {
+  if (getDistance((ball.x + ball.height), (ball.y + ball.height), box.x, box.y) < 30||
+      getDistance(ball.x, (ball.y + ball.height), (box.x + box.width), box.y) < 30 )  {
+      box.hit();
       ball.dx = -(ball.dx);
       ball.dy = -(ball.dy);
-      box.dx = -(box.dx);
-      box.dy = -(box.dy);
+      box.dx = -(ball.dx);
+      box.dy = -(ball.dy);
   }
 };
 
 export const wallDetection = (object, canvas) => {
   if (object.x + object.dx > canvas.width - object.width || object.x + object.dx < 0) {
     object.dx = -object.dx;
+    boing.play();
   } else if (object.dy + object.y > canvas.height - object.height - 28 || object.dy + object.y < 0) {
     object.dy = -(Math.abs(object.dy * 0.8));
   }

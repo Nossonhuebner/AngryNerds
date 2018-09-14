@@ -8,7 +8,7 @@ class Shape {
     this.srcArr = srcArr;
     this.hits = 0;
     this.dx = 0;
-    this.by = 0;
+    this.dy = 0;
   }
 }
 
