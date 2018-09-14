@@ -1,11 +1,8 @@
-// import Shape from './elements/shape';
-// import Ball from './elements/ball';
-// import Box from './elements/box';
-import { gameOverModal, levelsModal, startModal, wallDetection,
-        mousePos, stop, getDistance, drawSun, collisionDetection } from './util';
-import Sling from './elements/sling';
 import { level1 } from './levels/level1';
 import { level2 } from './levels/level2';
+import Sling from './elements/sling';
+import { gameOverModal, levelsModal, startModal, wallDetection,
+  mousePos, stop, getDistance, drawSun, collisionDetection } from './util';
 
 document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById("myCanvas");
@@ -18,13 +15,13 @@ document.addEventListener('DOMContentLoaded', () => {
   let boxes = levels[0].boxes;
   let ball = levels[0].balls[0];
 
-  var dx = 2;
-  var dy = -2;
+  // var dx = 2;
+  // var dy = -2;
   var gravity = 0.5;
   var friction = 0.99;
-  let by;
-  let bx;
-  let hit = false;
+  // let by ;
+  // let bx;
+  // let hit = false;
   let mouseHold = false;
   let pos;
   let mpos;
@@ -187,7 +184,6 @@ document.addEventListener('DOMContentLoaded', () => {
       ball.y = mpos.y;
     } else if (released) {
       stopped = false;
-      released = false;
       const pullY = y - mpos.y;
       const pullX = x - Math.min(mpos.x, 400);
 
@@ -206,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
       ball.y += ball.dy;
       ball.x += ball.dx;
 
-      if (Math.abs(dy) < 0.05 && ball.y > canvas.height - 150 ) {
+      if (Math.abs(ball.dy) < 0.05 && ball.y > canvas.height - 150 ) {
         stopped = true;
         if (balls.length > 1) {
           retiredBalls.push(balls.shift());
@@ -217,11 +213,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
     ball.draw(ctx);
-    // if (released) {
-    //   released = false;
-    //   levels[0].retiredBalls.push(levels[0].balls.shift());
-    //   ball = levels[0].balls[0];// next ball
-    // }
+    for (var i = 0; i < levels[0].retiredBalls.length; i++) {
+      levels[0].retiredBalls[i].draw();
+    }
+    if (released) {
+      released = false;
+      levels[0].retiredBalls.push(levels[0].balls.shift());
+      ball = levels[0].balls[0];// next ball
+    }
   }
     requestAnimationFrame(draw);
   }

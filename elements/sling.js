@@ -9,8 +9,6 @@ class Sling {
   }
 
   draw(mouseHold, x, y) {
-    this.x = x;
-    this.y = y;
     if (mouseHold) { // lines to and from mousePos
       this.mouseHold = true;
       this.ctx.strokeStyle = 'black';
