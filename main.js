@@ -13,18 +13,16 @@ document.addEventListener('DOMContentLoaded', () => {
   const y = 333;
   let levels = [level1, level2];
   let boxes = levels[0].boxes;
+  let balls = levels[0].balls;
   let ball = levels[0].balls[0];
 
-  // var dx = 2;
-  // var dy = -2;
   var gravity = 0.5;
   var friction = 0.99;
-  // let by ;
-  // let bx;
-  // let hit = false;
   let mouseHold = false;
   let pos;
   let mpos;
+
+  
   let released = false;
   let action = false;
   let stopped = true;
@@ -161,6 +159,10 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (levelOver) {
        levelsModal(ctx, canvas);
     } else {
+
+      if (mouseHold ) {
+        ball = balls.shift();
+      }
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawSun(ctx);
     drawFence();
@@ -203,23 +205,25 @@ document.addEventListener('DOMContentLoaded', () => {
       ball.x += ball.dx;
 
       if (Math.abs(ball.dy) < 0.05 && ball.y > canvas.height - 150 ) {
+
         stopped = true;
-        if (balls.length > 1) {
-          retiredBalls.push(balls.shift());
-        } else {
-          gameOver = true;
-        }
+        // if (balls.length > 1) {
+        //   // levels[0].retiredBalls.push(balls.shift());
+        // } else {
+        //   gameOver = true;
+        // }
         ball = balls[0];
       }
     }
     ball.draw(ctx);
     for (var i = 0; i < levels[0].retiredBalls.length; i++) {
-      levels[0].retiredBalls[i].draw();
+      levels[0].retiredBalls[i].draw(ctx);
     }
+
     if (released) {
       released = false;
-      levels[0].retiredBalls.push(levels[0].balls.shift());
-      ball = levels[0].balls[0];// next ball
+      // levels[0].retiredBalls.push(levels[0].balls.shift());
+      // ball = levels[0].balls[0];// next ball
     }
   }
     requestAnimationFrame(draw);

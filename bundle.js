@@ -36,32 +36,17 @@
 /******/ 	// define getter function for harmony exports
 /******/ 	__webpack_require__.d = function(exports, name, getter) {
 /******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
+/******/ 			Object.defineProperty(exports, name, {
+/******/ 				configurable: false,
+/******/ 				enumerable: true,
+/******/ 				get: getter
+/******/ 			});
 /******/ 		}
 /******/ 	};
 /******/
 /******/ 	// define __esModule on exports
 /******/ 	__webpack_require__.r = function(exports) {
-/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 		}
 /******/ 		Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 	};
-/******/
-/******/ 	// create a fake namespace object
-/******/ 	// mode & 1: value is a module id, require it
-/******/ 	// mode & 2: merge all properties of value into the ns
-/******/ 	// mode & 4: return value when already ns object
-/******/ 	// mode & 8|1: behave like require
-/******/ 	__webpack_require__.t = function(value, mode) {
-/******/ 		if(mode & 1) value = __webpack_require__(value);
-/******/ 		if(mode & 8) return value;
-/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
-/******/ 		var ns = Object.create(null);
-/******/ 		__webpack_require__.r(ns);
-/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
-/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
-/******/ 		return ns;
 /******/ 	};
 /******/
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
@@ -346,18 +331,16 @@ document.addEventListener('DOMContentLoaded', () => {
   const y = 333;
   let levels = [_levels_level1__WEBPACK_IMPORTED_MODULE_0__["level1"], _levels_level2__WEBPACK_IMPORTED_MODULE_1__["level2"]];
   let boxes = levels[0].boxes;
+  let balls = levels[0].balls;
   let ball = levels[0].balls[0];
 
-  // var dx = 2;
-  // var dy = -2;
   var gravity = 0.5;
   var friction = 0.99;
-  // let by ;
-  // let bx;
-  // let hit = false;
   let mouseHold = false;
   let pos;
   let mpos;
+
+  
   let released = false;
   let action = false;
   let stopped = true;
@@ -494,6 +477,10 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (levelOver) {
        Object(_util__WEBPACK_IMPORTED_MODULE_3__["levelsModal"])(ctx, canvas);
     } else {
+
+      if (mouseHold ) {
+        ball = balls.shift();
+      }
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     Object(_util__WEBPACK_IMPORTED_MODULE_3__["drawSun"])(ctx);
     drawFence();
@@ -536,23 +523,25 @@ document.addEventListener('DOMContentLoaded', () => {
       ball.x += ball.dx;
 
       if (Math.abs(ball.dy) < 0.05 && ball.y > canvas.height - 150 ) {
+
         stopped = true;
-        if (balls.length > 1) {
-          retiredBalls.push(balls.shift());
-        } else {
-          gameOver = true;
-        }
+        // if (balls.length > 1) {
+        //   // levels[0].retiredBalls.push(balls.shift());
+        // } else {
+        //   gameOver = true;
+        // }
         ball = balls[0];
       }
     }
     ball.draw(ctx);
     for (var i = 0; i < levels[0].retiredBalls.length; i++) {
-      levels[0].retiredBalls[i].draw();
+      levels[0].retiredBalls[i].draw(ctx);
     }
+
     if (released) {
       released = false;
-      levels[0].retiredBalls.push(levels[0].balls.shift());
-      ball = levels[0].balls[0];// next ball
+      // levels[0].retiredBalls.push(levels[0].balls.shift());
+      // ball = levels[0].balls[0];// next ball
     }
   }
     requestAnimationFrame(draw);
