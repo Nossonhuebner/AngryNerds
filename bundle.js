@@ -340,7 +340,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let pos;
   let mpos;
 
-  
+
   let released = false;
   let action = false;
   let stopped = true;
@@ -478,9 +478,6 @@ document.addEventListener('DOMContentLoaded', () => {
        Object(_util__WEBPACK_IMPORTED_MODULE_3__["levelsModal"])(ctx, canvas);
     } else {
 
-      if (mouseHold ) {
-        ball = balls.shift();
-      }
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     Object(_util__WEBPACK_IMPORTED_MODULE_3__["drawSun"])(ctx);
     drawFence();
