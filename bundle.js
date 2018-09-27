@@ -81,7 +81,9 @@
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _shape__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./shape */ "./elements/shape.js");
-/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../util */ "./util.js");
+/* harmony import */ var _main__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../main */ "./main.js");
+/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../util */ "./util.js");
+
 
 
 
@@ -91,7 +93,24 @@ class Ball extends _shape__WEBPACK_IMPORTED_MODULE_0__["default"] {
   }
 
   draw(ctx) {
-    // wallDetection(this, ctx.canvas);
+    Object(_util__WEBPACK_IMPORTED_MODULE_2__["wallDetection"])(this, ctx.canvas);
+
+
+    if (this.moving) {
+      this.dx *= _main__WEBPACK_IMPORTED_MODULE_1__["FRICTION"];
+      if ((this.dy + this.y > ctx.canvas.height - this.height- 28 )|| this.dy + this.y < this.height ) { //hit top / bottom
+        this.dy = -this.dy * 0.9 ;
+      } else {
+        this.dy += _main__WEBPACK_IMPORTED_MODULE_1__["GRAVITY"];
+      }
+
+      Object(_util__WEBPACK_IMPORTED_MODULE_2__["wallDetection"])(this, ctx.canvas);
+
+      this.y += this.dy;
+      this.x += this.dx;
+    }
+
+
     // this.x += (this.dx * 0.99);
     // this.y += this.dy + 0.5;
     ctx.drawImage(this.img, this.x - 12, this.y - 12, this.height, this.height);
@@ -114,6 +133,8 @@ class Ball extends _shape__WEBPACK_IMPORTED_MODULE_0__["default"] {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _shape__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./shape */ "./elements/shape.js");
+/* harmony import */ var _main__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../main */ "./main.js");
+
 
 
 class Box extends _shape__WEBPACK_IMPORTED_MODULE_0__["default"] {
@@ -133,9 +154,9 @@ class Box extends _shape__WEBPACK_IMPORTED_MODULE_0__["default"] {
       return;
     } else if (this.hits) {
         // if (this.y + this.by + (2 * gravity) + this.height < canvas.height - 38) { //off the ground
-        this.dy += (2 * 0.5); // gravity
+        this.dy += (2 * _main__WEBPACK_IMPORTED_MODULE_1__["GRAVITY"]); // gravity
         // }
-        this.dx *= 0.99; // friction
+        this.dx *= _main__WEBPACK_IMPORTED_MODULE_1__["FRICTION"]; // friction
         this.x += this.dx;
         this.y = Math.min((ctx.canvas.height - this.height - 28), (this.y + this.dy));
     }
@@ -144,6 +165,7 @@ class Box extends _shape__WEBPACK_IMPORTED_MODULE_0__["default"] {
   }
 
   hit() {
+    this.moving = true;
     this.explosion.play();
     this.hits += 1;
   }
@@ -176,6 +198,7 @@ class Shape {
     this.hits = 0;
     this.dx = 0;
     this.dy = 0;
+    this.moving = false;
   }
 }
 
@@ -308,11 +331,13 @@ const level2 = {boxes: [box1, box2], balls: balls, retiredBalls: []};
 /*!*****************!*\
   !*** ./main.js ***!
   \*****************/
-/*! no exports provided */
+/*! exports provided: GRAVITY, FRICTION */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "GRAVITY", function() { return GRAVITY; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FRICTION", function() { return FRICTION; });
 /* harmony import */ var _levels_level1__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./levels/level1 */ "./levels/level1.js");
 /* harmony import */ var _levels_level2__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./levels/level2 */ "./levels/level2.js");
 /* harmony import */ var _elements_sling__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./elements/sling */ "./elements/sling.js");
@@ -321,6 +346,9 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+const GRAVITY = 0.5;
+const FRICTION = 0.99;
 
 document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById("myCanvas");
@@ -334,11 +362,9 @@ document.addEventListener('DOMContentLoaded', () => {
   let balls = levels[0].balls;
   let ball = levels[0].balls[0];
 
-  var gravity = 0.5;
-  var friction = 0.99;
   let mouseHold = false;
   let pos;
-  let mpos;
+  let mpos = {x: "", y: ""};
 
 
   let released = false;
@@ -366,6 +392,7 @@ document.addEventListener('DOMContentLoaded', () => {
   canvas.addEventListener('mouseup', (e) => {
     // if (start && !levelOver && !gameOver) {
     //   if (stopped) {
+        ball.moving = true;
         action = true;
         mouseHold = false;
         released = true;
@@ -413,7 +440,6 @@ document.addEventListener('DOMContentLoaded', () => {
   function drawBox(box) {
     const height = 75;
     if (ball.x + ball.width > box.x && ball.x - ball.width < box.x + box.width && ball.y + ball.width > box.y ) {
-      hit = true;
       box.hit();
       console.log(box.hits);
 
@@ -428,7 +454,7 @@ document.addEventListener('DOMContentLoaded', () => {
       box.dy = -box.dy;
     }
 
-    if (hit) {
+    if (ball.hits) {
       if (box.y + box.dy + (2 * gravity) + box.height < canvas.height - 38) {
         box.dy += (2 * gravity);
       }
@@ -440,7 +466,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const sling = new _elements_sling__WEBPACK_IMPORTED_MODULE_2__["default"](ctx, mouseHold, ball.x, ball.y);
   function drawString() {
-    sling.draw(mouseHold, ball.x, ball.y);
+    sling.draw(mouseHold, mpos.x, mpos.y);
   }
 
 
@@ -469,6 +495,15 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
+  function boxHandler() {
+    for (let i = 0; i < boxes.length; i++) {
+      Object(_util__WEBPACK_IMPORTED_MODULE_3__["collisionDetection"])(ball, boxes[i]);
+      Object(_util__WEBPACK_IMPORTED_MODULE_3__["wallDetection"])(boxes[i], canvas);
+      boxes[i].draw(ctx);
+    }
+  }
+
+
   function draw() {
     if (!start) {
        Object(_util__WEBPACK_IMPORTED_MODULE_3__["startModal"])(ctx, canvas);
@@ -482,64 +517,48 @@ document.addEventListener('DOMContentLoaded', () => {
     Object(_util__WEBPACK_IMPORTED_MODULE_3__["drawSun"])(ctx);
     drawFence();
     drawString();
-
-    for (let i = 0; i < boxes.length; i++) {
-      Object(_util__WEBPACK_IMPORTED_MODULE_3__["collisionDetection"])(ball, boxes[i]);
-      Object(_util__WEBPACK_IMPORTED_MODULE_3__["wallDetection"])(boxes[i], canvas);
-      boxes[i].draw(ctx);
-    }
+    boxHandler();
 
     for (let i = 0; i < levels[0].balls.length; i++) {
       levels[0].balls[i].draw(ctx);
     }
-    if (action && ball.y < canvas.height - ball.height - 28) {
-      validHeight = true;
-    }
 
-    if (mouseHold && mpos.y < canvas.height - ball.height && stopped) {
+
+    if (!ball.moving) { // holding ball
       ball.x = Math.min(mpos.x, 400);
       ball.y = mpos.y;
-    } else if (released) {
-      stopped = false;
+    } else if (released) { // just released ball
+      released = false;
       const pullY = y - mpos.y;
       const pullX = x - Math.min(mpos.x, 400);
-
       ball.dy = pullY / 5;
       ball.dx = pullX / 5;
-    }
-    if (action) {
-      ball.dx *= friction;
-      if ((ball.dy + ball.y > canvas.height - ball.height- 28  && validHeight )|| ball.dy + ball.y < ball.height ) { //hit top / bottom
-        ball.dy = -ball.dy * 0.9 ;
+
+      if (balls.length > 1) {
+      levels[0].retiredBalls.push(balls.shift());
+      ball = balls[0];
       } else {
-        ball.dy += gravity;
+        gameOver = true;
       }
-      Object(_util__WEBPACK_IMPORTED_MODULE_3__["wallDetection"])(ball, canvas);
 
-      ball.y += ball.dy;
-      ball.x += ball.dx;
-
-      if (Math.abs(ball.dy) < 0.05 && ball.y > canvas.height - 150 ) {
-
-        stopped = true;
-        // if (balls.length > 1) {
-        //   // levels[0].retiredBalls.push(balls.shift());
-        // } else {
-        //   gameOver = true;
-        // }
-        ball = balls[0];
-      }
     }
+
+
+      // if (Math.abs(ball.dy) < 0.05 && ball.y > canvas.height - 150 ) {
+      //
+      //   ball.moving = false;
+      //   // if (balls.length > 1) {
+      //   //   // levels[0].retiredBalls.push(balls.shift());
+      //   // ball = balls[0];
+      //   // } else {
+      //   //   gameOver = true;
+      //   // }
+      // }
     ball.draw(ctx);
     for (var i = 0; i < levels[0].retiredBalls.length; i++) {
       levels[0].retiredBalls[i].draw(ctx);
     }
 
-    if (released) {
-      released = false;
-      // levels[0].retiredBalls.push(levels[0].balls.shift());
-      // ball = levels[0].balls[0];// next ball
-    }
   }
     requestAnimationFrame(draw);
   }
@@ -642,6 +661,8 @@ const collisionDetection = (ball, box) => {
 };
 
 const wallDetection = (object, canvas) => {
+  if (!object.moving) return; // hasnt fallen or is being held
+
   if (object.x + object.dx > canvas.width - object.width || object.x + object.dx < 0) {
     object.dx = -object.dx;
     boing.play();

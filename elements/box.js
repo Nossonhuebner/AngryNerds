@@ -1,4 +1,5 @@
 import Shape from './shape';
+import { FRICTION, GRAVITY } from '../main';
 
 class Box extends Shape {
   constructor(img, x, y, height, width, srcArr) {
@@ -17,9 +18,9 @@ class Box extends Shape {
       return;
     } else if (this.hits) {
         // if (this.y + this.by + (2 * gravity) + this.height < canvas.height - 38) { //off the ground
-        this.dy += (2 * 0.5); // gravity
+        this.dy += (2 * GRAVITY); // gravity
         // }
-        this.dx *= 0.99; // friction
+        this.dx *= FRICTION; // friction
         this.x += this.dx;
         this.y = Math.min((ctx.canvas.height - this.height - 28), (this.y + this.dy));
     }
@@ -28,6 +29,7 @@ class Box extends Shape {
   }
 
   hit() {
+    this.moving = true;
     this.explosion.play();
     this.hits += 1;
   }

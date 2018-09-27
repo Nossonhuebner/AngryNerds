@@ -4,6 +4,9 @@ import Sling from './elements/sling';
 import { gameOverModal, levelsModal, startModal, wallDetection,
   mousePos, stop, getDistance, drawSun, collisionDetection } from './util';
 
+export const GRAVITY = 0.5;
+export const FRICTION = 0.99;
+
 document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById("myCanvas");
   const ctx = canvas.getContext("2d");
@@ -16,11 +19,9 @@ document.addEventListener('DOMContentLoaded', () => {
   let balls = levels[0].balls;
   let ball = levels[0].balls[0];
 
-  var gravity = 0.5;
-  var friction = 0.99;
   let mouseHold = false;
   let pos;
-  let mpos;
+  let mpos = {x: "", y: ""};
 
 
   let released = false;
@@ -48,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
   canvas.addEventListener('mouseup', (e) => {
     // if (start && !levelOver && !gameOver) {
     //   if (stopped) {
+        ball.moving = true;
         action = true;
         mouseHold = false;
         released = true;
@@ -95,7 +97,6 @@ document.addEventListener('DOMContentLoaded', () => {
   function drawBox(box) {
     const height = 75;
     if (ball.x + ball.width > box.x && ball.x - ball.width < box.x + box.width && ball.y + ball.width > box.y ) {
-      hit = true;
       box.hit();
       console.log(box.hits);
 
@@ -110,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
       box.dy = -box.dy;
     }
 
-    if (hit) {
+    if (ball.hits) {
       if (box.y + box.dy + (2 * gravity) + box.height < canvas.height - 38) {
         box.dy += (2 * gravity);
       }
@@ -122,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const sling = new Sling(ctx, mouseHold, ball.x, ball.y);
   function drawString() {
-    sling.draw(mouseHold, ball.x, ball.y);
+    sling.draw(mouseHold, mpos.x, mpos.y);
   }
 
 
@@ -151,6 +152,15 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
+  function boxHandler() {
+    for (let i = 0; i < boxes.length; i++) {
+      collisionDetection(ball, boxes[i]);
+      wallDetection(boxes[i], canvas);
+      boxes[i].draw(ctx);
+    }
+  }
+
+
   function draw() {
     if (!start) {
        startModal(ctx, canvas);
@@ -164,64 +174,48 @@ document.addEventListener('DOMContentLoaded', () => {
     drawSun(ctx);
     drawFence();
     drawString();
-
-    for (let i = 0; i < boxes.length; i++) {
-      collisionDetection(ball, boxes[i]);
-      wallDetection(boxes[i], canvas);
-      boxes[i].draw(ctx);
-    }
+    boxHandler();
 
     for (let i = 0; i < levels[0].balls.length; i++) {
       levels[0].balls[i].draw(ctx);
     }
-    if (action && ball.y < canvas.height - ball.height - 28) {
-      validHeight = true;
-    }
 
-    if (mouseHold && mpos.y < canvas.height - ball.height && stopped) {
+
+    if (!ball.moving) { // holding ball
       ball.x = Math.min(mpos.x, 400);
       ball.y = mpos.y;
-    } else if (released) {
-      stopped = false;
+    } else if (released) { // just released ball
+      released = false;
       const pullY = y - mpos.y;
       const pullX = x - Math.min(mpos.x, 400);
-
       ball.dy = pullY / 5;
       ball.dx = pullX / 5;
-    }
-    if (action) {
-      ball.dx *= friction;
-      if ((ball.dy + ball.y > canvas.height - ball.height- 28  && validHeight )|| ball.dy + ball.y < ball.height ) { //hit top / bottom
-        ball.dy = -ball.dy * 0.9 ;
+
+      if (balls.length > 1) {
+      levels[0].retiredBalls.push(balls.shift());
+      ball = balls[0];
       } else {
-        ball.dy += gravity;
+        gameOver = true;
       }
-      wallDetection(ball, canvas);
 
-      ball.y += ball.dy;
-      ball.x += ball.dx;
-
-      if (Math.abs(ball.dy) < 0.05 && ball.y > canvas.height - 150 ) {
-
-        stopped = true;
-        // if (balls.length > 1) {
-        //   // levels[0].retiredBalls.push(balls.shift());
-        // } else {
-        //   gameOver = true;
-        // }
-        ball = balls[0];
-      }
     }
+
+
+      // if (Math.abs(ball.dy) < 0.05 && ball.y > canvas.height - 150 ) {
+      //
+      //   ball.moving = false;
+      //   // if (balls.length > 1) {
+      //   //   // levels[0].retiredBalls.push(balls.shift());
+      //   // ball = balls[0];
+      //   // } else {
+      //   //   gameOver = true;
+      //   // }
+      // }
     ball.draw(ctx);
     for (var i = 0; i < levels[0].retiredBalls.length; i++) {
       levels[0].retiredBalls[i].draw(ctx);
     }
 
-    if (released) {
-      released = false;
-      // levels[0].retiredBalls.push(levels[0].balls.shift());
-      // ball = levels[0].balls[0];// next ball
-    }
   }
     requestAnimationFrame(draw);
   }

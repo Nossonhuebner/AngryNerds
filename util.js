@@ -72,6 +72,8 @@ export const collisionDetection = (ball, box) => {
 };
 
 export const wallDetection = (object, canvas) => {
+  if (!object.moving) return; // hasnt fallen or is being held
+
   if (object.x + object.dx > canvas.width - object.width || object.x + object.dx < 0) {
     object.dx = -object.dx;
     boing.play();
