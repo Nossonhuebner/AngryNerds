@@ -93,26 +93,14 @@ class Ball extends _shape__WEBPACK_IMPORTED_MODULE_0__["default"] {
   }
 
   draw(ctx) {
-    Object(_util__WEBPACK_IMPORTED_MODULE_2__["wallDetection"])(this, ctx.canvas);
-
-
     if (this.moving) {
       this.dx *= _main__WEBPACK_IMPORTED_MODULE_1__["FRICTION"];
-      if ((this.dy + this.y > ctx.canvas.height - this.height- 28 )|| this.dy + this.y < this.height ) { //hit top / bottom
-        this.dy = -this.dy * 0.9 ;
-      } else {
-        this.dy += _main__WEBPACK_IMPORTED_MODULE_1__["GRAVITY"];
-      }
-
+      this.dy += _main__WEBPACK_IMPORTED_MODULE_1__["GRAVITY"];
       Object(_util__WEBPACK_IMPORTED_MODULE_2__["wallDetection"])(this, ctx.canvas);
-
       this.y += this.dy;
       this.x += this.dx;
     }
-
-
-    // this.x += (this.dx * 0.99);
-    // this.y += this.dy + 0.5;
+    
     ctx.drawImage(this.img, this.x - 12, this.y - 12, this.height, this.height);
   }
 
@@ -147,19 +135,18 @@ class Box extends _shape__WEBPACK_IMPORTED_MODULE_0__["default"] {
 
   draw(ctx) {
     if (this.hits > 2) { //reduce visibilty if dead
-      // this.width = 1;
-      // this.height = 0;
-      // this.x = 0;
-      // this.y = 0;
+      this.width = 1;
+      this.height = 0;
+      this.x = 0;
+      this.y = 0;
       return;
-    } else if (this.hits) {
-        // if (this.y + this.by + (2 * gravity) + this.height < canvas.height - 38) { //off the ground
-        this.dy += (2 * _main__WEBPACK_IMPORTED_MODULE_1__["GRAVITY"]); // gravity
-        // }
-        this.dx *= _main__WEBPACK_IMPORTED_MODULE_1__["FRICTION"]; // friction
+    } else if (this.moving) {
+        this.dy += (2 * _main__WEBPACK_IMPORTED_MODULE_1__["GRAVITY"]);
+        this.dx *= _main__WEBPACK_IMPORTED_MODULE_1__["FRICTION"];
         this.x += this.dx;
         this.y = Math.min((ctx.canvas.height - this.height - 28), (this.y + this.dy));
     }
+    
     this.img.src = this.srcArr[this.hits];
     ctx.drawImage(this.img, this.x, this.y, 75, 75);
   }
@@ -650,8 +637,9 @@ const getDistance = (x1, y1, x2, y2) => {
 };
 
 const collisionDetection = (ball, box) => {
-  if (getDistance((ball.x + ball.height), (ball.y + ball.height), box.x, box.y) < 30||
-      getDistance(ball.x, (ball.y + ball.height), (box.x + box.width), box.y) < 30 )  {
+  debugger
+  console.log(getDistance((ball.x + ball.width / 2), (ball.y + ball.height / 2), (box.x + box.width / 2), (box.y + box.height / 2)));
+  if (getDistance((ball.x + ball.width / 2), (ball.y + ball.height / 2), (box.x + box.width / 2), (box.y + box.height / 2)) < 30) {
       box.hit();
       ball.dx = -(ball.dx);
       ball.dy = -(ball.dy);

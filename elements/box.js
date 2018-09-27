@@ -11,19 +11,18 @@ class Box extends Shape {
 
   draw(ctx) {
     if (this.hits > 2) { //reduce visibilty if dead
-      // this.width = 1;
-      // this.height = 0;
-      // this.x = 0;
-      // this.y = 0;
+      this.width = 1;
+      this.height = 0;
+      this.x = 0;
+      this.y = 0;
       return;
-    } else if (this.hits) {
-        // if (this.y + this.by + (2 * gravity) + this.height < canvas.height - 38) { //off the ground
-        this.dy += (2 * GRAVITY); // gravity
-        // }
-        this.dx *= FRICTION; // friction
+    } else if (this.moving) {
+        this.dy += (2 * GRAVITY);
+        this.dx *= FRICTION;
         this.x += this.dx;
         this.y = Math.min((ctx.canvas.height - this.height - 28), (this.y + this.dy));
     }
+    
     this.img.src = this.srcArr[this.hits];
     ctx.drawImage(this.img, this.x, this.y, 75, 75);
   }
