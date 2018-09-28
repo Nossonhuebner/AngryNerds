@@ -4,7 +4,7 @@ import Sling from './elements/sling';
 import { gameOverModal, levelsModal, startModal, wallDetection,
   mousePos, stop, getDistance, drawSun, collisionDetection } from './util';
 
-export const GRAVITY = 0.5;
+export const GRAVITY = 0.6;
 export const FRICTION = 0.99;
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -38,12 +38,17 @@ document.addEventListener('DOMContentLoaded', () => {
   canvas.addEventListener('mousedown', (e) => {
     // if (start && !levelOver && !gameOver) {
     //   if (stopped) {
-    levels[0].retiredBalls.push(balls.shift());
-    ball = balls[0];
+    if (levels[0].balls.length > 1) {
+        levels[0].retiredBalls.push(balls.shift());
+        ball = balls[0];
         action = false;
         released = false;
         mouseHold = true;
         validHeight = false;
+      } else {
+        debugger
+        gameOver = true;
+      }
     //   }
     // }
   });
@@ -167,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function draw() {
     if (!start) {
        startModal(ctx, canvas);
-    } else if (gameOver) {
+    } else if (gameOver || balls[balls.length-1].stopped) {
         gameOverModal(ctx, canvas);
     } else if (levelOver) {
        levelsModal(ctx, canvas);
@@ -179,9 +184,6 @@ document.addEventListener('DOMContentLoaded', () => {
     drawString();
     boxHandler();
 
-    for (let i = 0; i < levels[0].balls.length; i++) {
-      levels[0].balls[i].draw(ctx);
-    }
 
 
     if (!ball.moving) { // holding ball
@@ -198,7 +200,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    ball.draw(ctx);
+    // ball.draw(ctx);
+
+    for (let i = 0; i < levels[0].balls.length; i++) {
+      levels[0].balls[i].draw(ctx);
+    }
+
     for (var i = 0; i < levels[0].retiredBalls.length; i++) {
       levels[0].retiredBalls[i].draw(ctx);
     }

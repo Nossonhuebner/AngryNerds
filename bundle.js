@@ -94,11 +94,16 @@ class Ball extends _shape__WEBPACK_IMPORTED_MODULE_0__["default"] {
 
   draw(ctx) {
     if (this.moving) {
-      this.dx *= _main__WEBPACK_IMPORTED_MODULE_1__["FRICTION"];
-      this.dy += _main__WEBPACK_IMPORTED_MODULE_1__["GRAVITY"];
-      Object(_util__WEBPACK_IMPORTED_MODULE_2__["wallDetection"])(this, ctx.canvas);
-      this.y += this.dy;
-      this.x += this.dx;
+      if (this.y > 423 && Math.abs(this.dx) < 1 && Math.abs(this.dy) < 1) {
+        this.stopped = true;
+      } else {
+        console.log(this);
+        this.dx *= _main__WEBPACK_IMPORTED_MODULE_1__["FRICTION"];
+        this.dy += _main__WEBPACK_IMPORTED_MODULE_1__["GRAVITY"];
+        Object(_util__WEBPACK_IMPORTED_MODULE_2__["wallDetection"])(this, ctx.canvas);
+        this.y += this.dy;
+        this.x += this.dx;
+      }
     }
 
     ctx.drawImage(this.img, this.x - 12, this.y - 12, this.height, this.height);
@@ -334,7 +339,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const GRAVITY = 0.5;
+const GRAVITY = 0.6;
 const FRICTION = 0.99;
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -368,12 +373,17 @@ document.addEventListener('DOMContentLoaded', () => {
   canvas.addEventListener('mousedown', (e) => {
     // if (start && !levelOver && !gameOver) {
     //   if (stopped) {
-    levels[0].retiredBalls.push(balls.shift());
-    ball = balls[0];
+    if (levels[0].balls.length > 1) {
+        levels[0].retiredBalls.push(balls.shift());
+        ball = balls[0];
         action = false;
         released = false;
         mouseHold = true;
         validHeight = false;
+      } else {
+        debugger
+        gameOver = true;
+      }
     //   }
     // }
   });
@@ -497,7 +507,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function draw() {
     if (!start) {
        Object(_util__WEBPACK_IMPORTED_MODULE_3__["startModal"])(ctx, canvas);
-    } else if (gameOver) {
+    } else if (gameOver || balls[balls.length-1].stopped) {
         Object(_util__WEBPACK_IMPORTED_MODULE_3__["gameOverModal"])(ctx, canvas);
     } else if (levelOver) {
        Object(_util__WEBPACK_IMPORTED_MODULE_3__["levelsModal"])(ctx, canvas);
@@ -509,9 +519,6 @@ document.addEventListener('DOMContentLoaded', () => {
     drawString();
     boxHandler();
 
-    for (let i = 0; i < levels[0].balls.length; i++) {
-      levels[0].balls[i].draw(ctx);
-    }
 
 
     if (!ball.moving) { // holding ball
@@ -528,7 +535,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    ball.draw(ctx);
+    // ball.draw(ctx);
+
+    for (let i = 0; i < levels[0].balls.length; i++) {
+      levels[0].balls[i].draw(ctx);
+    }
+
     for (var i = 0; i < levels[0].retiredBalls.length; i++) {
       levels[0].retiredBalls[i].draw(ctx);
     }
