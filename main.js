@@ -4,7 +4,7 @@ import Sling from './elements/sling';
 import { gameOverModal, levelsModal, startModal, wallDetection,
   mousePos, stop, getDistance, drawSun, collisionDetection } from './util';
 
-export const GRAVITY = 0.6;
+export const GRAVITY = 0.5;
 export const FRICTION = 0.99;
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -25,10 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   let released = false;
-  let action = false;
-  let stopped = true;
-  let validHeight = false;
-  let modal = false;
   let gameOver = false;
   let levelOver = false;
   let start = false;
@@ -37,31 +33,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
   canvas.addEventListener('mousedown', (e) => {
     // if (start && !levelOver && !gameOver) {
-    //   if (stopped) {
     if (levels[0].balls.length > 1) {
         levels[0].retiredBalls.push(balls.shift());
         ball = balls[0];
-        action = false;
         released = false;
         mouseHold = true;
-        validHeight = false;
       } else {
-        debugger
         gameOver = true;
       }
     //   }
-    // }
   });
 
   canvas.addEventListener('mouseup', (e) => {
     // if (start && !levelOver && !gameOver) {
-    //   if (stopped) {
         ball.moving = true;
-        action = true;
         mouseHold = false;
         released = true;
         pos = null;
-    //   }
     // }
   });
 
@@ -74,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!start) {
         start = true;
       } else if (gameOver) {
-        levels = [[1],level1, level2];
+        levels = [[1], level1, level2];
         handleLevels();
         gameOver = false;
       } else if (levelOver) {
@@ -99,33 +87,6 @@ document.addEventListener('DOMContentLoaded', () => {
     boxes = levels[0].boxes;
     balls = levels[0].balls;
     ball = balls[0];
-  }
-
-  function drawBox(box) {
-    const height = 75;
-    if (ball.x + ball.width > box.x && ball.x - ball.width < box.x + box.width && ball.y + ball.width > box.y ) {
-      box.hit();
-      console.log(box.hits);
-
-      if (ball.y < box.y || ball.y > box.y + box.height) { // top hit
-        ball.y -= 10;
-        box.dy = -(Math.abs(box.dy));
-      } else {
-        ball.x = ball.x < box.x ? ball.x -10 : ball.x + 10;
-        box.dx = -(box.dx);
-      }
-      box.dx = -box.dx;
-      box.dy = -box.dy;
-    }
-
-    if (ball.hits) {
-      if (box.y + box.dy + (2 * gravity) + box.height < canvas.height - 38) {
-        box.dy += (2 * gravity);
-      }
-      box.dx *= friction;
-      box.x += box.dx;
-      box.y = Math.min((canvas.height - box.height - 28), (box.y + box.dy));
-    }
   }
 
   const sling = new Sling(ctx, mouseHold, ball.x, ball.y);
@@ -172,9 +133,9 @@ document.addEventListener('DOMContentLoaded', () => {
   function draw() {
     if (!start) {
        startModal(ctx, canvas);
-    } else if (gameOver || balls[balls.length-1].stopped) {
+    } else if (gameOver) {
         gameOverModal(ctx, canvas);
-    } else if (levelOver) {
+    } else if (isLevelOver()) {
        levelsModal(ctx, canvas);
     } else {
 
@@ -191,8 +152,8 @@ document.addEventListener('DOMContentLoaded', () => {
       ball.y = mpos.y;
     } else if (released) { // just released ball
       released = false;
-      const pullY = y - mpos.y;
-      const pullX = x - Math.min(mpos.x, 400);
+      const pullY = sling.centerY - mpos.y; // calculate elasticity based on distance from sling pos
+      const pullX = sling.centerX - Math.min(mpos.x, 400);
       ball.dy = pullY / 5;
       ball.dx = pullX / 5;
        if ( balls.length > 1 && Math.abs(ball.dy) < 0.05 && ball.y > canvas.height - 150 ) { // final ball stopped
@@ -208,6 +169,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     for (var i = 0; i < levels[0].retiredBalls.length; i++) {
       levels[0].retiredBalls[i].draw(ctx);
+    }
+
+    if (balls[balls.length-1].stopped) {
+      gameOver = true;
     }
 
   }

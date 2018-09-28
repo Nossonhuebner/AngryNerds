@@ -61,7 +61,11 @@ export const getDistance = (x1, y1, x2, y2) => {
 };
 
 export const collisionDetection = (ball, box) => {
-  if (getDistance((ball.x + ball.width / 2), (ball.y + ball.height / 2), (box.x + box.width / 2), (box.y + box.height / 2)) < 30) {
+  const ballCenter = ball.width / 2;
+  const boxCenter = box.width / 2;
+  const distance = getDistance((ball.x + ballCenter), (ball.y + ballCenter),
+   (box.x + boxCenter), (box.y + (box.height / 2)));
+  if (distance - (ballCenter + boxCenter) < 1) {
       box.hit();
       ball.dx = -(ball.dx);
       ball.dy = -(ball.dy);
@@ -71,13 +75,13 @@ export const collisionDetection = (ball, box) => {
 };
 
 export const wallDetection = (object, canvas) => {
-  if (!object.moving) return; // hasnt fallen or is being held
 
+  if (!object.moving) return; // hasnt fallen or is being held
   if (object.x + object.dx > canvas.width - object.width || object.x + object.dx < 0) {
     object.dx = -object.dx;
     boing.play();
   } else if (object.dy + object.y > canvas.height - object.height - 28 || object.dy + object.y < 0) {
-    object.dy = -(Math.abs(object.dy * 0.8));
+    object.dy = -(object.dy) * 0.8;
   }
 };
 

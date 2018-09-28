@@ -11,7 +11,7 @@ class Box extends Shape {
 
   draw(ctx) {
     if (this.hits > 2) { //reduce visibilty if dead
-      this.width = 1;
+      this.width = 0;
       this.height = 0;
       this.x = 0;
       this.y = 0;
@@ -22,7 +22,7 @@ class Box extends Shape {
         this.x += this.dx;
         this.y = Math.min((ctx.canvas.height - this.height - 28), (this.y + this.dy));
     }
-    
+
     this.img.src = this.srcArr[this.hits];
     ctx.drawImage(this.img, this.x, this.y, 75, 75);
   }

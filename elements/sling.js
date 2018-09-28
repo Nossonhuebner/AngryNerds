@@ -2,8 +2,8 @@ class Sling {
   constructor(ctx, mouseHold, x, y) {
     this.mouseHold = mouseHold;
     this.ctx = ctx;
-    this.x = x;
-    this.y = y;
+    this.centerX = 125;
+    this.centerY = 333;
     this.launch = new Audio();
     this.launch.src = "./assets/audio/bomb_drop.wav";
   }

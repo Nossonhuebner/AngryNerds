@@ -97,7 +97,6 @@ class Ball extends _shape__WEBPACK_IMPORTED_MODULE_0__["default"] {
       if (this.y > 423 && Math.abs(this.dx) < 1 && Math.abs(this.dy) < 1) {
         this.stopped = true;
       } else {
-        console.log(this);
         this.dx *= _main__WEBPACK_IMPORTED_MODULE_1__["FRICTION"];
         this.dy += _main__WEBPACK_IMPORTED_MODULE_1__["GRAVITY"];
         Object(_util__WEBPACK_IMPORTED_MODULE_2__["wallDetection"])(this, ctx.canvas);
@@ -111,7 +110,20 @@ class Ball extends _shape__WEBPACK_IMPORTED_MODULE_0__["default"] {
 
 }
 
-/* harmony default export */ __webpack_exports__["default"] = (Ball);
+
+
+class BallsArr {
+  constructor () {
+    this.balls = [new Ball(new Image(), 1, 1, 1)]; // dummy starting ball
+      let ballImg = new Image();
+      ballImg.src = './assets/images/nerd.png';
+      for (var i = 0; i < 3; i++) {
+        this.balls.push(new Ball(ballImg, 125 + (30 * i), 388, 25));
+      }
+  }
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (BallsArr);
 
 
 /***/ }),
@@ -140,7 +152,7 @@ class Box extends _shape__WEBPACK_IMPORTED_MODULE_0__["default"] {
 
   draw(ctx) {
     if (this.hits > 2) { //reduce visibilty if dead
-      this.width = 1;
+      this.width = 0;
       this.height = 0;
       this.x = 0;
       this.y = 0;
@@ -151,7 +163,7 @@ class Box extends _shape__WEBPACK_IMPORTED_MODULE_0__["default"] {
         this.x += this.dx;
         this.y = Math.min((ctx.canvas.height - this.height - 28), (this.y + this.dy));
     }
-    
+
     this.img.src = this.srcArr[this.hits];
     ctx.drawImage(this.img, this.x, this.y, 75, 75);
   }
@@ -212,8 +224,8 @@ class Sling {
   constructor(ctx, mouseHold, x, y) {
     this.mouseHold = mouseHold;
     this.ctx = ctx;
-    this.x = x;
-    this.y = y;
+    this.centerX = 125;
+    this.centerY = 333;
     this.launch = new Audio();
     this.launch.src = "./assets/audio/bomb_drop.wav";
   }
@@ -270,19 +282,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _elements_ball__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../elements/ball */ "./elements/ball.js");
 
 
-  //balls
-  let balls = [new _elements_ball__WEBPACK_IMPORTED_MODULE_1__["default"](new Image(), 1, 1, 1)]; // dummy starting ball
-  let ballImg = new Image();
-  ballImg.src = './assets/images/nerd.png';
-  for (var i = 0; i < 3; i++) {
-    balls.push(new _elements_ball__WEBPACK_IMPORTED_MODULE_1__["default"](ballImg, 125 + (30 * i), 388, 25));
-  }
 
   //boxes
   let boxImg = new Image();
   const srcArr = ['./assets/images/webpack/webpack-logo.png',
    './assets/images/webpack/webpack-logo-orange.png','./assets/images/webpack/webpack-logo-red.png'];
-  const level1 = {boxes: [new _elements_box__WEBPACK_IMPORTED_MODULE_0__["default"](boxImg, 600, 300, 50, 50, srcArr)], balls: balls, retiredBalls: []};
+  const level1 = {boxes: [new _elements_box__WEBPACK_IMPORTED_MODULE_0__["default"](boxImg, 600, 300, 50, 50, srcArr)], balls: new _elements_ball__WEBPACK_IMPORTED_MODULE_1__["default"]().balls, retiredBalls: []};
 
 
 /***/ }),
@@ -302,19 +307,12 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-//balls
-let balls = [new _elements_ball__WEBPACK_IMPORTED_MODULE_0__["default"](new Image(), 1, 1, 1)]; // dummy starting ball
-  let ballImg = new Image();
-  ballImg.src = './assets/images/nerd.png';
-  for (var i = 0; i < 3; i++) {
-    balls.push(new _elements_ball__WEBPACK_IMPORTED_MODULE_0__["default"](ballImg, 125 + (30 * i), 388, 25));
-  }
 //boxes
 let boxImg = new Image();
 const srcArr = ['./assets/images/heroku/heroku.png', './assets/images/heroku/heroku-orange.png', './assets/images/heroku/heroku-red.png'];
 const box1 = new _elements_box__WEBPACK_IMPORTED_MODULE_1__["default"](boxImg, 550, 300, 75, 50, srcArr);
 const box2 = new _elements_box__WEBPACK_IMPORTED_MODULE_1__["default"](boxImg, 650, 300, 75, 50, srcArr);
-const level2 = {boxes: [box1, box2], balls: balls, retiredBalls: []};
+const level2 = {boxes: [box1, box2], balls: (new _elements_ball__WEBPACK_IMPORTED_MODULE_0__["default"]().balls), retiredBalls: []};
 
 
 /***/ }),
@@ -339,7 +337,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const GRAVITY = 0.6;
+const GRAVITY = 0.5;
 const FRICTION = 0.99;
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -360,10 +358,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   let released = false;
-  let action = false;
-  let stopped = true;
-  let validHeight = false;
-  let modal = false;
   let gameOver = false;
   let levelOver = false;
   let start = false;
@@ -372,31 +366,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
   canvas.addEventListener('mousedown', (e) => {
     // if (start && !levelOver && !gameOver) {
-    //   if (stopped) {
     if (levels[0].balls.length > 1) {
         levels[0].retiredBalls.push(balls.shift());
         ball = balls[0];
-        action = false;
         released = false;
         mouseHold = true;
-        validHeight = false;
       } else {
-        debugger
         gameOver = true;
       }
     //   }
-    // }
   });
 
   canvas.addEventListener('mouseup', (e) => {
     // if (start && !levelOver && !gameOver) {
-    //   if (stopped) {
         ball.moving = true;
-        action = true;
         mouseHold = false;
         released = true;
         pos = null;
-    //   }
     // }
   });
 
@@ -409,7 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!start) {
         start = true;
       } else if (gameOver) {
-        levels = [[1],_levels_level1__WEBPACK_IMPORTED_MODULE_0__["level1"], _levels_level2__WEBPACK_IMPORTED_MODULE_1__["level2"]];
+        levels = [[1], _levels_level1__WEBPACK_IMPORTED_MODULE_0__["level1"], _levels_level2__WEBPACK_IMPORTED_MODULE_1__["level2"]];
         handleLevels();
         gameOver = false;
       } else if (levelOver) {
@@ -434,33 +420,6 @@ document.addEventListener('DOMContentLoaded', () => {
     boxes = levels[0].boxes;
     balls = levels[0].balls;
     ball = balls[0];
-  }
-
-  function drawBox(box) {
-    const height = 75;
-    if (ball.x + ball.width > box.x && ball.x - ball.width < box.x + box.width && ball.y + ball.width > box.y ) {
-      box.hit();
-      console.log(box.hits);
-
-      if (ball.y < box.y || ball.y > box.y + box.height) { // top hit
-        ball.y -= 10;
-        box.dy = -(Math.abs(box.dy));
-      } else {
-        ball.x = ball.x < box.x ? ball.x -10 : ball.x + 10;
-        box.dx = -(box.dx);
-      }
-      box.dx = -box.dx;
-      box.dy = -box.dy;
-    }
-
-    if (ball.hits) {
-      if (box.y + box.dy + (2 * gravity) + box.height < canvas.height - 38) {
-        box.dy += (2 * gravity);
-      }
-      box.dx *= friction;
-      box.x += box.dx;
-      box.y = Math.min((canvas.height - box.height - 28), (box.y + box.dy));
-    }
   }
 
   const sling = new _elements_sling__WEBPACK_IMPORTED_MODULE_2__["default"](ctx, mouseHold, ball.x, ball.y);
@@ -507,9 +466,9 @@ document.addEventListener('DOMContentLoaded', () => {
   function draw() {
     if (!start) {
        Object(_util__WEBPACK_IMPORTED_MODULE_3__["startModal"])(ctx, canvas);
-    } else if (gameOver || balls[balls.length-1].stopped) {
+    } else if (gameOver) {
         Object(_util__WEBPACK_IMPORTED_MODULE_3__["gameOverModal"])(ctx, canvas);
-    } else if (levelOver) {
+    } else if (isLevelOver()) {
        Object(_util__WEBPACK_IMPORTED_MODULE_3__["levelsModal"])(ctx, canvas);
     } else {
 
@@ -526,8 +485,8 @@ document.addEventListener('DOMContentLoaded', () => {
       ball.y = mpos.y;
     } else if (released) { // just released ball
       released = false;
-      const pullY = y - mpos.y;
-      const pullX = x - Math.min(mpos.x, 400);
+      const pullY = sling.centerY - mpos.y; // calculate elasticity based on distance from sling pos
+      const pullX = sling.centerX - Math.min(mpos.x, 400);
       ball.dy = pullY / 5;
       ball.dx = pullX / 5;
        if ( balls.length > 1 && Math.abs(ball.dy) < 0.05 && ball.y > canvas.height - 150 ) { // final ball stopped
@@ -543,6 +502,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     for (var i = 0; i < levels[0].retiredBalls.length; i++) {
       levels[0].retiredBalls[i].draw(ctx);
+    }
+
+    if (balls[balls.length-1].stopped) {
+      gameOver = true;
     }
 
   }
@@ -636,7 +599,11 @@ const getDistance = (x1, y1, x2, y2) => {
 };
 
 const collisionDetection = (ball, box) => {
-  if (getDistance((ball.x + ball.width / 2), (ball.y + ball.height / 2), (box.x + box.width / 2), (box.y + box.height / 2)) < 30) {
+  const ballCenter = ball.width / 2;
+  const boxCenter = box.width / 2;
+  const distance = getDistance((ball.x + ballCenter), (ball.y + ballCenter),
+   (box.x + boxCenter), (box.y + (box.height / 2)));
+  if (distance - (ballCenter + boxCenter) < 1) {
       box.hit();
       ball.dx = -(ball.dx);
       ball.dy = -(ball.dy);
@@ -646,13 +613,13 @@ const collisionDetection = (ball, box) => {
 };
 
 const wallDetection = (object, canvas) => {
-  if (!object.moving) return; // hasnt fallen or is being held
 
+  if (!object.moving) return; // hasnt fallen or is being held
   if (object.x + object.dx > canvas.width - object.width || object.x + object.dx < 0) {
     object.dx = -object.dx;
     boing.play();
   } else if (object.dy + object.y > canvas.height - object.height - 28 || object.dy + object.y < 0) {
-    object.dy = -(Math.abs(object.dy * 0.8));
+    object.dy = -(object.dy) * 0.8;
   }
 };
 
