@@ -80,7 +80,7 @@ export const wallDetection = (object, canvas) => {
   if (object.x + object.dx > canvas.width - object.width || object.x + object.dx < 0) {
     object.dx = -object.dx;
     boing.play();
-  } else if (object.dy + object.y > canvas.height - object.height - 28 || object.dy + object.y < 0) {
+  } else if ((object.dy + object.y > canvas.height - object.height - 28 && !object.invalidHeight) || object.dy + object.y < 0) {
     object.dy = -(object.dy) * 0.8;
   }
 };

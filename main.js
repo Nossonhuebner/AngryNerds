@@ -131,6 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   function draw() {
+
     if (!start) {
        startModal(ctx, canvas);
     } else if (gameOver) {
@@ -138,7 +139,6 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (isLevelOver()) {
        levelsModal(ctx, canvas);
     } else {
-
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawSun(ctx);
     drawFence();

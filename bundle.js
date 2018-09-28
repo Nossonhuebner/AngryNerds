@@ -90,10 +90,14 @@ __webpack_require__.r(__webpack_exports__);
 class Ball extends _shape__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor(img, x, y, ballRadius) {
     super(img, x, y, ballRadius, ballRadius);
+    this.invalidHeight = true; // allows for dragging below groundlevel on launch
   }
 
   draw(ctx) {
     if (this.moving) {
+
+      if (this.y < ctx.canvas.height - 30) this.invalidHeight = false;
+
       if (this.y > 423 && Math.abs(this.dx) < 1 && Math.abs(this.dy) < 1) {
         this.stopped = true;
       } else {
@@ -464,6 +468,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   function draw() {
+
     if (!start) {
        Object(_util__WEBPACK_IMPORTED_MODULE_3__["startModal"])(ctx, canvas);
     } else if (gameOver) {
@@ -471,7 +476,6 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (isLevelOver()) {
        Object(_util__WEBPACK_IMPORTED_MODULE_3__["levelsModal"])(ctx, canvas);
     } else {
-
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     Object(_util__WEBPACK_IMPORTED_MODULE_3__["drawSun"])(ctx);
     drawFence();
@@ -618,7 +622,7 @@ const wallDetection = (object, canvas) => {
   if (object.x + object.dx > canvas.width - object.width || object.x + object.dx < 0) {
     object.dx = -object.dx;
     boing.play();
-  } else if (object.dy + object.y > canvas.height - object.height - 28 || object.dy + object.y < 0) {
+  } else if ((object.dy + object.y > canvas.height - object.height - 28 && !object.invalidHeight) || object.dy + object.y < 0) {
     object.dy = -(object.dy) * 0.8;
   }
 };

@@ -5,10 +5,14 @@ import{ wallDetection } from '../util';
 class Ball extends Shape {
   constructor(img, x, y, ballRadius) {
     super(img, x, y, ballRadius, ballRadius);
+    this.invalidHeight = true; // allows for dragging below groundlevel on launch
   }
 
   draw(ctx) {
     if (this.moving) {
+
+      if (this.y < ctx.canvas.height - 30) this.invalidHeight = false;
+
       if (this.y > 423 && Math.abs(this.dx) < 1 && Math.abs(this.dy) < 1) {
         this.stopped = true;
       } else {
