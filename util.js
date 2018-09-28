@@ -61,8 +61,6 @@ export const getDistance = (x1, y1, x2, y2) => {
 };
 
 export const collisionDetection = (ball, box) => {
-  debugger
-  console.log(getDistance((ball.x + ball.width / 2), (ball.y + ball.height / 2), (box.x + box.width / 2), (box.y + box.height / 2)));
   if (getDistance((ball.x + ball.width / 2), (ball.y + ball.height / 2), (box.x + box.width / 2), (box.y + box.height / 2)) < 30) {
       box.hit();
       ball.dx = -(ball.dx);

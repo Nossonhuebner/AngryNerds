@@ -100,7 +100,7 @@ class Ball extends _shape__WEBPACK_IMPORTED_MODULE_0__["default"] {
       this.y += this.dy;
       this.x += this.dx;
     }
-    
+
     ctx.drawImage(this.img, this.x - 12, this.y - 12, this.height, this.height);
   }
 
@@ -266,7 +266,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
   //balls
-  let balls = [];
+  let balls = [new _elements_ball__WEBPACK_IMPORTED_MODULE_1__["default"](new Image(), 1, 1, 1)]; // dummy starting ball
   let ballImg = new Image();
   ballImg.src = './assets/images/nerd.png';
   for (var i = 0; i < 3; i++) {
@@ -298,7 +298,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 //balls
-  let balls = [];
+let balls = [new _elements_ball__WEBPACK_IMPORTED_MODULE_0__["default"](new Image(), 1, 1, 1)]; // dummy starting ball
   let ballImg = new Image();
   ballImg.src = './assets/images/nerd.png';
   for (var i = 0; i < 3; i++) {
@@ -368,6 +368,8 @@ document.addEventListener('DOMContentLoaded', () => {
   canvas.addEventListener('mousedown', (e) => {
     // if (start && !levelOver && !gameOver) {
     //   if (stopped) {
+    levels[0].retiredBalls.push(balls.shift());
+    ball = balls[0];
         action = false;
         released = false;
         mouseHold = true;
@@ -484,6 +486,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function boxHandler() {
     for (let i = 0; i < boxes.length; i++) {
+
       Object(_util__WEBPACK_IMPORTED_MODULE_3__["collisionDetection"])(ball, boxes[i]);
       Object(_util__WEBPACK_IMPORTED_MODULE_3__["wallDetection"])(boxes[i], canvas);
       boxes[i].draw(ctx);
@@ -520,27 +523,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const pullX = x - Math.min(mpos.x, 400);
       ball.dy = pullY / 5;
       ball.dx = pullX / 5;
-
-      if (balls.length > 1) {
-      levels[0].retiredBalls.push(balls.shift());
-      ball = balls[0];
-      } else {
+       if ( balls.length > 1 && Math.abs(ball.dy) < 0.05 && ball.y > canvas.height - 150 ) { // final ball stopped
         gameOver = true;
       }
-
     }
 
-
-      // if (Math.abs(ball.dy) < 0.05 && ball.y > canvas.height - 150 ) {
-      //
-      //   ball.moving = false;
-      //   // if (balls.length > 1) {
-      //   //   // levels[0].retiredBalls.push(balls.shift());
-      //   // ball = balls[0];
-      //   // } else {
-      //   //   gameOver = true;
-      //   // }
-      // }
     ball.draw(ctx);
     for (var i = 0; i < levels[0].retiredBalls.length; i++) {
       levels[0].retiredBalls[i].draw(ctx);
@@ -637,8 +624,6 @@ const getDistance = (x1, y1, x2, y2) => {
 };
 
 const collisionDetection = (ball, box) => {
-  debugger
-  console.log(getDistance((ball.x + ball.width / 2), (ball.y + ball.height / 2), (box.x + box.width / 2), (box.y + box.height / 2)));
   if (getDistance((ball.x + ball.width / 2), (ball.y + ball.height / 2), (box.x + box.width / 2), (box.y + box.height / 2)) < 30) {
       box.hit();
       ball.dx = -(ball.dx);

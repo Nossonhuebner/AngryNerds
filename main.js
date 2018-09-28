@@ -38,6 +38,8 @@ document.addEventListener('DOMContentLoaded', () => {
   canvas.addEventListener('mousedown', (e) => {
     // if (start && !levelOver && !gameOver) {
     //   if (stopped) {
+    levels[0].retiredBalls.push(balls.shift());
+    ball = balls[0];
         action = false;
         released = false;
         mouseHold = true;
@@ -154,6 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function boxHandler() {
     for (let i = 0; i < boxes.length; i++) {
+
       collisionDetection(ball, boxes[i]);
       wallDetection(boxes[i], canvas);
       boxes[i].draw(ctx);
@@ -190,27 +193,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const pullX = x - Math.min(mpos.x, 400);
       ball.dy = pullY / 5;
       ball.dx = pullX / 5;
-
-      if (balls.length > 1) {
-      levels[0].retiredBalls.push(balls.shift());
-      ball = balls[0];
-      } else {
+       if ( balls.length > 1 && Math.abs(ball.dy) < 0.05 && ball.y > canvas.height - 150 ) { // final ball stopped
         gameOver = true;
       }
-
     }
 
-
-      // if (Math.abs(ball.dy) < 0.05 && ball.y > canvas.height - 150 ) {
-      //
-      //   ball.moving = false;
-      //   // if (balls.length > 1) {
-      //   //   // levels[0].retiredBalls.push(balls.shift());
-      //   // ball = balls[0];
-      //   // } else {
-      //   //   gameOver = true;
-      //   // }
-      // }
     ball.draw(ctx);
     for (var i = 0; i < levels[0].retiredBalls.length; i++) {
       levels[0].retiredBalls[i].draw(ctx);

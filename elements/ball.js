@@ -15,7 +15,7 @@ class Ball extends Shape {
       this.y += this.dy;
       this.x += this.dx;
     }
-    
+
     ctx.drawImage(this.img, this.x - 12, this.y - 12, this.height, this.height);
   }
 

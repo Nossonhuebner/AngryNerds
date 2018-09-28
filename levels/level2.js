@@ -2,7 +2,7 @@ import Ball from '../elements/ball';
 import Box from '../elements/box';
 
 //balls
-  let balls = [];
+let balls = [new Ball(new Image(), 1, 1, 1)]; // dummy starting ball
   let ballImg = new Image();
   ballImg.src = './assets/images/nerd.png';
   for (var i = 0; i < 3; i++) {
