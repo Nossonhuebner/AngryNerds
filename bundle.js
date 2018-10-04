@@ -406,11 +406,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!start) {
       start = true;
       return;
-    }
+    } else if (gameOver) {
+      levels = [[1], new _levels_level1__WEBPACK_IMPORTED_MODULE_0__["LevelOne"](), new _levels_level2__WEBPACK_IMPORTED_MODULE_1__["LevelTwo"]()];
+      handleLevels();
+      gameOver = false;
+    } else if (levelOver) {
+      setTimeout(() => {
+        handleLevels();
+        levelOver = false;
+      }, 1000);
+    } else {
       ball.moving = true;
       mouseHold = false;
       released = true;
       pos = null;
+    }
   });
 
   canvas.addEventListener('mousemove', (e) => {
@@ -418,7 +428,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.addEventListener('keydown', (e) => {
-    debugger
     if (e.key === "Enter") {
       if (!start) {
         start = true;

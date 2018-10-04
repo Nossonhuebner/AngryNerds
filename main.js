@@ -48,11 +48,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!start) {
       start = true;
       return;
-    }
+    } else if (gameOver) {
+      levels = [[1], new LevelOne(), new LevelTwo()];
+      handleLevels();
+      gameOver = false;
+    } else if (levelOver) {
+      setTimeout(() => {
+        handleLevels();
+        levelOver = false;
+      }, 1000);
+    } else {
       ball.moving = true;
       mouseHold = false;
       released = true;
       pos = null;
+    }
   });
 
   canvas.addEventListener('mousemove', (e) => {
@@ -60,7 +70,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.addEventListener('keydown', (e) => {
-    debugger
     if (e.key === "Enter") {
       if (!start) {
         start = true;
