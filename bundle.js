@@ -276,12 +276,12 @@ class Sling {
 /*!**************************!*\
   !*** ./levels/level1.js ***!
   \**************************/
-/*! exports provided: level1 */
+/*! exports provided: LevelOne */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "level1", function() { return level1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "LevelOne", function() { return LevelOne; });
 /* harmony import */ var _elements_box__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../elements/box */ "./elements/box.js");
 /* harmony import */ var _elements_ball__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../elements/ball */ "./elements/ball.js");
 
@@ -290,8 +290,17 @@ __webpack_require__.r(__webpack_exports__);
   //boxes
   let boxImg = new Image();
   const srcArr = ['./assets/images/webpack/webpack-logo.png',
-   './assets/images/webpack/webpack-logo-orange.png','./assets/images/webpack/webpack-logo-red.png'];
-  const level1 = {boxes: [new _elements_box__WEBPACK_IMPORTED_MODULE_0__["default"](boxImg, 600, 300, 50, 50, srcArr)], balls: new _elements_ball__WEBPACK_IMPORTED_MODULE_1__["default"]().balls, retiredBalls: []};
+                  './assets/images/webpack/webpack-logo-orange.png',
+                  './assets/images/webpack/webpack-logo-red.png'
+                  ];
+
+class LevelOne {
+  constructor() {
+    this.boxes = [new _elements_box__WEBPACK_IMPORTED_MODULE_0__["default"](boxImg, 600, 300, 50, 50, srcArr)];
+    this.balls = new _elements_ball__WEBPACK_IMPORTED_MODULE_1__["default"]().balls;
+    this.retiredBalls= [];
+  }
+}
 
 
 /***/ }),
@@ -300,12 +309,13 @@ __webpack_require__.r(__webpack_exports__);
 /*!**************************!*\
   !*** ./levels/level2.js ***!
   \**************************/
-/*! exports provided: level2 */
+/*! exports provided: level2, LevelTwo */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "level2", function() { return level2; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "LevelTwo", function() { return LevelTwo; });
 /* harmony import */ var _elements_ball__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../elements/ball */ "./elements/ball.js");
 /* harmony import */ var _elements_box__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../elements/box */ "./elements/box.js");
 
@@ -317,6 +327,17 @@ const srcArr = ['./assets/images/heroku/heroku.png', './assets/images/heroku/her
 const box1 = new _elements_box__WEBPACK_IMPORTED_MODULE_1__["default"](boxImg, 550, 300, 75, 50, srcArr);
 const box2 = new _elements_box__WEBPACK_IMPORTED_MODULE_1__["default"](boxImg, 650, 300, 75, 50, srcArr);
 const level2 = {boxes: [box1, box2], balls: (new _elements_ball__WEBPACK_IMPORTED_MODULE_0__["default"]().balls), retiredBalls: []};
+
+
+class LevelTwo {
+  constructor() {
+    this.boxes = [new _elements_box__WEBPACK_IMPORTED_MODULE_1__["default"](boxImg, 550, 300, 75, 50, srcArr),
+                  new _elements_box__WEBPACK_IMPORTED_MODULE_1__["default"](boxImg, 650, 300, 75, 50, srcArr)
+                  ];
+    this.balls = new _elements_ball__WEBPACK_IMPORTED_MODULE_0__["default"]().balls;
+    this.retiredBalls= [];
+  }
+}
 
 
 /***/ }),
@@ -351,7 +372,7 @@ document.addEventListener('DOMContentLoaded', () => {
   ctx.canvas.height = 485;
   const x = 125; // middle of sling
   const y = 333;
-  let levels = [_levels_level1__WEBPACK_IMPORTED_MODULE_0__["level1"], _levels_level2__WEBPACK_IMPORTED_MODULE_1__["level2"]];
+  let levels = [new _levels_level1__WEBPACK_IMPORTED_MODULE_0__["LevelOne"](), new _levels_level2__WEBPACK_IMPORTED_MODULE_1__["LevelTwo"]()];
   let boxes = levels[0].boxes;
   let balls = levels[0].balls;
   let ball = levels[0].balls[0];
@@ -369,7 +390,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   canvas.addEventListener('mousedown', (e) => {
-    // if (start && !levelOver && !gameOver) {
+    if (!start) return;
+
     if (levels[0].balls.length > 1) {
         levels[0].retiredBalls.push(balls.shift());
         ball = balls[0];
@@ -378,16 +400,17 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         gameOver = true;
       }
-    //   }
   });
 
   canvas.addEventListener('mouseup', (e) => {
-    // if (start && !levelOver && !gameOver) {
-        ball.moving = true;
-        mouseHold = false;
-        released = true;
-        pos = null;
-    // }
+    if (!start) {
+      start = true;
+      return;
+    }
+      ball.moving = true;
+      mouseHold = false;
+      released = true;
+      pos = null;
   });
 
   canvas.addEventListener('mousemove', (e) => {
@@ -395,11 +418,12 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.addEventListener('keydown', (e) => {
+    debugger
     if (e.key === "Enter") {
       if (!start) {
         start = true;
       } else if (gameOver) {
-        levels = [[1], _levels_level1__WEBPACK_IMPORTED_MODULE_0__["level1"], _levels_level2__WEBPACK_IMPORTED_MODULE_1__["level2"]];
+        levels = [[1], new _levels_level1__WEBPACK_IMPORTED_MODULE_0__["LevelOne"](), new _levels_level2__WEBPACK_IMPORTED_MODULE_1__["LevelTwo"]()];
         handleLevels();
         gameOver = false;
       } else if (levelOver) {
@@ -416,6 +440,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return false;
       }
     }
+    levelOver = true;
     return true;
   }
 

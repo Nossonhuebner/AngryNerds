@@ -1,5 +1,5 @@
-import { level1 } from './levels/level1';
-import { level2 } from './levels/level2';
+import {LevelOne} from './levels/level1';
+import { LevelTwo } from './levels/level2';
 import Sling from './elements/sling';
 import { gameOverModal, levelsModal, startModal, wallDetection,
   mousePos, stop, getDistance, drawSun, collisionDetection } from './util';
@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
   ctx.canvas.height = 485;
   const x = 125; // middle of sling
   const y = 333;
-  let levels = [level1, level2];
+  let levels = [new LevelOne(), new LevelTwo()];
   let boxes = levels[0].boxes;
   let balls = levels[0].balls;
   let ball = levels[0].balls[0];
@@ -32,7 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   canvas.addEventListener('mousedown', (e) => {
-    // if (start && !levelOver && !gameOver) {
+    if (!start) return;
+
     if (levels[0].balls.length > 1) {
         levels[0].retiredBalls.push(balls.shift());
         ball = balls[0];
@@ -41,16 +42,17 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         gameOver = true;
       }
-    //   }
   });
 
   canvas.addEventListener('mouseup', (e) => {
-    // if (start && !levelOver && !gameOver) {
-        ball.moving = true;
-        mouseHold = false;
-        released = true;
-        pos = null;
-    // }
+    if (!start) {
+      start = true;
+      return;
+    }
+      ball.moving = true;
+      mouseHold = false;
+      released = true;
+      pos = null;
   });
 
   canvas.addEventListener('mousemove', (e) => {
@@ -58,11 +60,12 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.addEventListener('keydown', (e) => {
+    debugger
     if (e.key === "Enter") {
       if (!start) {
         start = true;
       } else if (gameOver) {
-        levels = [[1], level1, level2];
+        levels = [[1], new LevelOne(), new LevelTwo()];
         handleLevels();
         gameOver = false;
       } else if (levelOver) {
@@ -79,6 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return false;
       }
     }
+    levelOver = true;
     return true;
   }
 
