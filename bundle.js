@@ -122,7 +122,7 @@ class BallsArr {
       let ballImg = new Image();
       ballImg.src = './assets/images/nerd.png';
       for (var i = 0; i < 3; i++) {
-        this.balls.push(new Ball(ballImg, 125 + (30 * i), 388, 25));
+        this.balls.push(new Ball(ballImg, 125 + (30 * i), 388, 25, 25));
       }
   }
 }
@@ -169,7 +169,7 @@ class Box extends _shape__WEBPACK_IMPORTED_MODULE_0__["default"] {
     }
 
     this.img.src = this.srcArr[this.hits];
-    ctx.drawImage(this.img, this.x, this.y, 75, 75);
+    ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
   }
 
   hit() {
@@ -296,7 +296,7 @@ __webpack_require__.r(__webpack_exports__);
 
 class LevelOne {
   constructor() {
-    this.boxes = [new _elements_box__WEBPACK_IMPORTED_MODULE_0__["default"](boxImg, 600, 300, 50, 50, srcArr)];
+    this.boxes = [new _elements_box__WEBPACK_IMPORTED_MODULE_0__["default"](boxImg, 600, 300, 75, 75, srcArr)];
     this.balls = new _elements_ball__WEBPACK_IMPORTED_MODULE_1__["default"]().balls;
     this.retiredBalls= [];
   }
@@ -378,7 +378,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let ball = levels[0].balls[0];
 
   let mouseHold = false;
-  let pos;
   let mpos = {x: "", y: ""};
 
 
@@ -390,7 +389,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   canvas.addEventListener('mousedown', (e) => {
-    if (!start) return;
+    if (!start || gameOver) return;
 
     if (levels[0].balls.length > 1) {
         levels[0].retiredBalls.push(balls.shift());
@@ -407,9 +406,11 @@ document.addEventListener('DOMContentLoaded', () => {
       start = true;
       return;
     } else if (gameOver) {
-      levels = [[1], new _levels_level1__WEBPACK_IMPORTED_MODULE_0__["LevelOne"](), new _levels_level2__WEBPACK_IMPORTED_MODULE_1__["LevelTwo"]()];
-      handleLevels();
-      gameOver = false;
+      setTimeout(() => {
+        levels = [[1], new _levels_level1__WEBPACK_IMPORTED_MODULE_0__["LevelOne"](), new _levels_level2__WEBPACK_IMPORTED_MODULE_1__["LevelTwo"]()];
+        handleLevels();
+        gameOver = false;
+      }, 1000);
     } else if (levelOver) {
       setTimeout(() => {
         handleLevels();
@@ -419,7 +420,6 @@ document.addEventListener('DOMContentLoaded', () => {
       ball.moving = true;
       mouseHold = false;
       released = true;
-      pos = null;
     }
   });
 

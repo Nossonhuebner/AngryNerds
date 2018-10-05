@@ -10,7 +10,7 @@ import BallsArr from '../elements/ball';
 
 export class LevelOne {
   constructor() {
-    this.boxes = [new Box(boxImg, 600, 300, 50, 50, srcArr)];
+    this.boxes = [new Box(boxImg, 600, 300, 75, 75, srcArr)];
     this.balls = new BallsArr().balls;
     this.retiredBalls= [];
   }

@@ -20,7 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let ball = levels[0].balls[0];
 
   let mouseHold = false;
-  let pos;
   let mpos = {x: "", y: ""};
 
 
@@ -32,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   canvas.addEventListener('mousedown', (e) => {
-    if (!start) return;
+    if (!start || gameOver) return;
 
     if (levels[0].balls.length > 1) {
         levels[0].retiredBalls.push(balls.shift());
@@ -49,9 +48,11 @@ document.addEventListener('DOMContentLoaded', () => {
       start = true;
       return;
     } else if (gameOver) {
-      levels = [[1], new LevelOne(), new LevelTwo()];
-      handleLevels();
-      gameOver = false;
+      setTimeout(() => {
+        levels = [[1], new LevelOne(), new LevelTwo()];
+        handleLevels();
+        gameOver = false;
+      }, 1000);
     } else if (levelOver) {
       setTimeout(() => {
         handleLevels();
@@ -61,7 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
       ball.moving = true;
       mouseHold = false;
       released = true;
-      pos = null;
     }
   });
 

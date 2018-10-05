@@ -24,7 +24,7 @@ class Box extends Shape {
     }
 
     this.img.src = this.srcArr[this.hits];
-    ctx.drawImage(this.img, this.x, this.y, 75, 75);
+    ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
   }
 
   hit() {

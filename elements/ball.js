@@ -37,7 +37,7 @@ class BallsArr {
       let ballImg = new Image();
       ballImg.src = './assets/images/nerd.png';
       for (var i = 0; i < 3; i++) {
-        this.balls.push(new Ball(ballImg, 125 + (30 * i), 388, 25));
+        this.balls.push(new Ball(ballImg, 125 + (30 * i), 388, 25, 25));
       }
   }
 }
