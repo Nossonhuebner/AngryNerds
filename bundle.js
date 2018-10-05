@@ -331,8 +331,8 @@ const level2 = {boxes: [box1, box2], balls: (new _elements_ball__WEBPACK_IMPORTE
 
 class LevelTwo {
   constructor() {
-    this.boxes = [new _elements_box__WEBPACK_IMPORTED_MODULE_1__["default"](boxImg, 550, 300, 75, 50, srcArr),
-                  new _elements_box__WEBPACK_IMPORTED_MODULE_1__["default"](boxImg, 650, 300, 75, 50, srcArr)
+    this.boxes = [new _elements_box__WEBPACK_IMPORTED_MODULE_1__["default"](boxImg, 550, 300, 65, 70, srcArr),
+                  new _elements_box__WEBPACK_IMPORTED_MODULE_1__["default"](boxImg, 650, 300, 65, 70, srcArr)
                   ];
     this.balls = new _elements_ball__WEBPACK_IMPORTED_MODULE_0__["default"]().balls;
     this.retiredBalls= [];

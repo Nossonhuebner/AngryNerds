@@ -11,8 +11,8 @@ export const level2 = {boxes: [box1, box2], balls: (new BallsArr().balls), retir
 
 export class LevelTwo {
   constructor() {
-    this.boxes = [new Box(boxImg, 550, 300, 75, 50, srcArr),
-                  new Box(boxImg, 650, 300, 75, 50, srcArr)
+    this.boxes = [new Box(boxImg, 550, 300, 65, 70, srcArr),
+                  new Box(boxImg, 650, 300, 65, 70, srcArr)
                   ];
     this.balls = new BallsArr().balls;
     this.retiredBalls= [];
