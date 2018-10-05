@@ -25,6 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let released = false;
   let gameOver = false;
+  const gameOverSound = new Audio();
+  gameOverSound.src = './assets/audio/game-over.wav';
   let levelOver = false;
   let start = false;
 
@@ -39,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
         released = false;
         mouseHold = true;
       } else {
+        gameOverSound.play();
         gameOver = true;
       }
   });
@@ -169,9 +172,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const pullX = sling.centerX - Math.min(mpos.x, 400);
       ball.dy = pullY / 5;
       ball.dx = pullX / 5;
-       if ( balls.length > 1 && Math.abs(ball.dy) < 0.05 && ball.y > canvas.height - 150 ) { // final ball stopped
-        gameOver = true;
-      }
     }
 
     // ball.draw(ctx);
@@ -185,6 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (balls[balls.length-1].stopped) {
+      gameOverSound.play();
       gameOver = true;
     }
 
