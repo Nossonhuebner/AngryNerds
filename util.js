@@ -84,10 +84,3 @@ export const wallDetection = (object, canvas) => {
     object.dy = -(object.dy) * 0.8;
   }
 };
-
-
-export const drawSun = (ctx) => {
-  const sun = new Image();
-  sun.src = './assets/images/coffee-sun.png';
-  ctx.drawImage(sun, 1000, 20, 110, 110);
-};

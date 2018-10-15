@@ -2,7 +2,7 @@ import {LevelOne} from './levels/level1';
 import { LevelTwo } from './levels/level2';
 import Sling from './elements/sling';
 import { gameOverModal, levelsModal, startModal, wallDetection,
-  mousePos, stop, getDistance, drawSun, collisionDetection } from './util';
+  mousePos, stop, getDistance, collisionDetection } from './util';
 
 export const GRAVITY = 0.5;
 export const FRICTION = 0.99;
@@ -156,7 +156,6 @@ document.addEventListener('DOMContentLoaded', () => {
        levelsModal(ctx, canvas);
     } else {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawSun(ctx);
     drawFence();
     drawString();
     boxHandler();
@@ -185,7 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (balls[balls.length-1].stopped) {
-      gameOverSound.play();
+      gameOverSound.play
       gameOver = true;
     }
 

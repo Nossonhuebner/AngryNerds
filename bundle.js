@@ -514,7 +514,6 @@ document.addEventListener('DOMContentLoaded', () => {
        Object(_util__WEBPACK_IMPORTED_MODULE_3__["levelsModal"])(ctx, canvas);
     } else {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    Object(_util__WEBPACK_IMPORTED_MODULE_3__["drawSun"])(ctx);
     drawFence();
     drawString();
     boxHandler();
@@ -543,7 +542,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (balls[balls.length-1].stopped) {
-      gameOverSound.play();
+      gameOverSound.play
       gameOver = true;
     }
 
@@ -561,7 +560,7 @@ document.addEventListener('DOMContentLoaded', () => {
 /*!*****************!*\
   !*** ./util.js ***!
   \*****************/
-/*! exports provided: gameOverModal, levelsModal, startModal, mousePos, stop, getDistance, collisionDetection, wallDetection, drawSun */
+/*! exports provided: gameOverModal, levelsModal, startModal, mousePos, stop, getDistance, collisionDetection, wallDetection */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -574,7 +573,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getDistance", function() { return getDistance; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "collisionDetection", function() { return collisionDetection; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "wallDetection", function() { return wallDetection; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "drawSun", function() { return drawSun; });
 const boing = new Audio();
 boing.src = "./assets/audio/boing.wav";
 
@@ -660,13 +658,6 @@ const wallDetection = (object, canvas) => {
   } else if ((object.dy + object.y > canvas.height - object.height - 28 && !object.invalidHeight) || object.dy + object.y < 0) {
     object.dy = -(object.dy) * 0.8;
   }
-};
-
-
-const drawSun = (ctx) => {
-  const sun = new Image();
-  sun.src = './assets/images/coffee-sun.png';
-  ctx.drawImage(sun, 1000, 20, 110, 110);
 };
 
 
